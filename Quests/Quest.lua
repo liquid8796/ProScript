@@ -118,11 +118,12 @@ function Quest:pokemart(exitMapName)
 		--else prepare buying
 		
 		--pokeballs
-		local pokeballToBuy = 150 - pokeballCount
-		local maximumBuyablePokeballs = getMoney() / 200
+		local pokeballToBuy = 20 - pokeballCount
+		--local maximumBuyablePokeballs = getMoney() / 200
+		local maximumBuyablePokeballs = 20
 		pokeballToBuy = math.min(pokeballToBuy, maximumBuyablePokeballs)
 		
-		if hasShopItem("Pokeball") and getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
+		if hasShopItem("Pokeball") and getItemQuantity("Pokeball") < 20 and getMoney() >= 200 then
 			if buyItem("Pokeball", pokeballToBuy) then
 				sys.debug("pokemart", "bought " .. math.floor(pokeballToBuy) .. " Pokeballs.")
 			end
@@ -262,7 +263,7 @@ end
 
 function Quest:needPokemart()
 	-- TODO: ItemManager
-	if getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
+	if getItemQuantity("Pokeball") < 20 and getMoney() >= 200 then
 		return true
 	end
 	return false
@@ -618,9 +619,9 @@ function Quest:battle()
 				and self.forceCaught ~= nil
 				and self.forceCaught == false))
 	then
-		--[[if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
 			return true 
-		end --]]
+		end
 	end
 
 	-- 8th badge Mewtwo fight

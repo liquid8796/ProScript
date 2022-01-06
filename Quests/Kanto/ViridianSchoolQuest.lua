@@ -11,7 +11,7 @@ local Dialog = require "Quests/Dialog"
 
 local name        = 'Viridian School'
 local description = 'from Route 1 to Route 2'
-local level = 20
+local level = 18
 
 local dialogs = {
 	jacksonDefeated = Dialog:new({
