@@ -13,7 +13,7 @@ local luaPokemonData = require "Data/luaPokemonData"
 
 local name        = 'Boulder Badge'
 local description = 'from route 2 to route 3'
-local level = 14
+local level = 25
 
 local BoulderBadgeQuest = Quest:new()
 function BoulderBadgeQuest:new()

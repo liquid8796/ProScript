@@ -5,6 +5,7 @@ local game = require "Libs/gamelib"
 local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
+local listPokemon = require "listPokemon"
 
 local Quest = {}
 
@@ -609,7 +610,7 @@ end
 
 function Quest:battle()
 	-- catching
-	local isEventPkm = getOpponentForm() ~= 0
+	--[[local isEventPkm = getOpponentForm() ~= 0
 	if isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
@@ -622,6 +623,9 @@ function Quest:battle()
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
 			return true 
 		end
+	end--]]
+	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and not isAlreadyCaught())) then
+		return true
 	end
 
 	-- 8th badge Mewtwo fight
