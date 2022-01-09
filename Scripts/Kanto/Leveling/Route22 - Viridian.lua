@@ -10,7 +10,6 @@ local listPokemon = require "listPokemon"
 function onStart()
 	setOptionName(1, "Auto relog")
 	setMount("Latios Mount")
-	sortTeamByLvAscending()
 	--for longer botting runs
 	return disablePrivateMessage()
 end
@@ -44,13 +43,24 @@ function onPathAction()
 end
 
 function onBattleAction()
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 5)) then		
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			return
+	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
+		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
+	if isTeamUsable then
+		local opponentLevel = getOpponentLevel()
+		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
+		if opponentLevel >= myPokemonLvl then
+			local requestedId, requestedLevel = getMaxLevelUsablePokemon()
+			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
+				return sendPokemon(requestedId) 
+			end
 		end
-	end
-	if getActivePokemonNumber() == 1 then
-		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
+		if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 5)) then		
+			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") or sendUsablePokemon() or sendAnyPokemon() then
+				return
+			end
+		else
+			return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
+		end
 	else
 		--relog(1,"Restart for healing!")
 		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
@@ -114,10 +124,18 @@ function addListToFile(list, path)
 	writeToFile(path, line, true)
 end
 
-function sortTeamByLvAscending()
-	while not isTeamSortedByLevelAscending() do
-		return sortTeamRangeByLevelAscending(1, getTeamSize())
+function getMaxLevelUsablePokemon()
+	local currentId
+	local currentLevel
+	for pokemonId=1, getTeamSize(), 1 do
+		local pokemonLevel = getPokemonLevel(pokemonId)
+		if  (currentLevel == nil or pokemonLevel > currentLevel)
+			and isPokemonUsable(pokemonId) then
+			currentLevel = pokemonLevel
+			currentId    = pokemonId
+		end
 	end
+	return currentId, currentLevel
 end
 
 function split(str, sep)
