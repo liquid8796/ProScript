@@ -5,11 +5,24 @@ description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or Viridian city.]]
 
-mode_catch = 1
-setOptionName(1, "Auto relog")
+local listPokemon = require "listPokemon"
+
+function addListToFile(list, path)
+	local line = "local listPokemon = \n{\n"
+	for key, value in pairs(list) do		
+        line = line .. "['"..key.."']="..value..","
+    end
+	line = line .. "\n}\nreturn listPokemon"
+	writeToFile(path, line, true)
+end
+function onStart()
+	setOptionName(1, "Auto relog")
+	setMount("Latios Mount")
+	--for longer botting runs
+	return disablePrivateMessage()
+end
 
 function onPathAction()
-	setMount("Xmas Dragonite Mount")
 	if isPokemonUsable(1) and getPokemonHealthPercent(1) > 30 then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
@@ -18,7 +31,8 @@ function onPathAction()
 		elseif getMapName() == "Route 1 Stop House" then
 			moveToCell(3,12)	
 		elseif getMapName() == "Route 1" then
-			moveToRectangle(18, 12, 25,13)
+			--moveToRectangle(18, 12, 25,13)
+			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			onAntibanPathAction()
 		end
@@ -38,31 +52,17 @@ function onPathAction()
 end
 
 function onBattleAction()
-	if mode_catch == 1 then
-		if isWildBattle() and (isOpponentShiny() or getOpponentName() == "Shinx") then
-			log("Your desire pokemon has been found!")
-			return useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball")
-		else
-			if getActivePokemonNumber() == 1 and getPokemonHealthPercent(1) > 30 then
-				return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-			else
-				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-				--return relog(1,"Reconnecting for healing")
-			end
+	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then		
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+			listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
+			return
 		end
-
+	end
+	if getActivePokemonNumber() == 1 and getPokemonHealthPercent(1) > 50 then
+		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
 	else
-		if isWildBattle() and isOpponentShiny() then
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-				return
-			end
-		end
-		if getActivePokemonNumber() == 1 and getPokemonHealthPercent(1) > 30 then
-			return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-		else
-			--return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-			return relog(1,"Reconnecting for healing")
-		end
+		--relog(1,"Restart for healing!")
+		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 	end
 end
 
@@ -103,6 +103,31 @@ function onAntibanDialogMessage(message)
 			pushDialogAnswer(value)
 		end
 	end
+end
+
+function isInListPokemon(list, val)
+    for key, value in pairs(list) do		
+        if key == val and value < 3 then	
+            return true
+        end
+    end
+    return false
+end
+
+function split(str, sep)
+   local result = {}
+   local regex = ("([^%s]+)"):format(sep)
+   for each in str:gmatch(regex) do
+      table.insert(result, each)
+   end
+   return result
+end
+
+function onBattleMessage(message)
+	if stringContains(message, "caught") then
+		addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+	end
+	return false
 end
 
 registerHook("onPathAction", onAntibanPathAction)

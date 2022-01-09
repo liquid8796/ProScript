@@ -617,7 +617,7 @@ end
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	--[[if isWildBattle() 													--if it's a wild battle:
+	if isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))
@@ -626,11 +626,11 @@ function Quest:battle()
 				and self.forceCaught ~= nil
 				and self.forceCaught == false))
 	then
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
+		--[[if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
 			return true 
-		end
-	end--]]
-	if isWildBattle()
+		end--]]
+	end
+	--[[if isWildBattle()
 		and (isOpponentShiny()
 		or (isInListPokemon(listPokemon, getOpponentName()) and not isAlreadyCaught())
 		or isEventPkm) 
@@ -639,7 +639,7 @@ function Quest:battle()
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			return true 
 		end
-	end
+	end--]]
 
 	-- 8th badge Mewtwo fight
 	if getOpponentName() == "Mewtwo" then

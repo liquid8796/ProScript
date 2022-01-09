@@ -5,32 +5,19 @@ description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or PalletTown.]]
 
-local file = readLinesFromFile("listPokemon.lua")
-local listPokemon = require addListFromFile(file) 
---[[local listPokemon = 
-{
-['Furret']=0,['Hoothoot']=0,['Pidgey']=0,['Rattata']=0,['Sentret']=0,['Shinx']=0,['Spinarak']=1,
-}--]]
+local listPokemon = require "listPokemon"
 
-function addListToFile(list)
+function addListToFile(list, path)
 	local line = "local listPokemon = \n{\n"
 	for key, value in pairs(list) do		
         line = line .. "['"..key.."']="..value..","
     end
 	line = line .. "\n}\nreturn listPokemon"
-	logToFile("listPokemon.lua", line, true)
-end
-function addListFromFile(file)
-	local result = ""
-	for key, value in pairs(file) do		
-        result = result .. file[key] .."\n"
-    end
-	log(result)
+	writeToFile(path, line, true)
 end
 function onStart()
 	setOptionName(1, "Auto relog")
 	setMount("Latios Mount")
-	addListFromFile(file)
 	--for longer botting runs
 	return disablePrivateMessage()
 end
@@ -44,8 +31,8 @@ function onPathAction()
 		elseif getMapName() == "Pallet Town" then
 			moveToCell(13,0)
 		elseif getMapName() == "Route 1" then
-			moveToRectangle(13, 48, 16, 49)
-			--moveToGrass()
+			--moveToRectangle(13, 48, 16, 49)
+			moveToGrass()
 		end
 	else
 		if getMapName() == "Route 1" then
@@ -59,16 +46,17 @@ function onPathAction()
 end
 
 function onBattleAction()
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then
+	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then		
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+			listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 			return
 		end
 	end
 	if getActivePokemonNumber() == 1 and getPokemonHealthPercent(1) > 50 then
 		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
 	else
-		relog(1,"Restart for healing!")
-		--return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
+		--relog(1,"Restart for healing!")
+		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 	end
 end
 
@@ -114,9 +102,7 @@ end
 
 function isInListPokemon(list, val)
     for key, value in pairs(list) do		
-        if key == val and value < 4 then
-			listPokemon[key] = listPokemon[key] + 1
-			log("Found "..key.."-"..value)
+        if key == val and value < 3 then	
             return true
         end
     end
@@ -130,6 +116,13 @@ function split(str, sep)
       table.insert(result, each)
    end
    return result
+end
+
+function onBattleMessage(message)
+	if stringContains(message, "caught") then
+		addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+	end
+	return false
 end
 
 registerHook("onPathAction", onAntibanPathAction)
