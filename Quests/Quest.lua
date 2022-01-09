@@ -84,7 +84,7 @@ function Quest:pokemart(exitMapName)
 	--local escapeRopeCount = getItemQuantity("Escape Rope")
 
 	--pokeballs
-	if (getMoney() >= 200 and pokeballCount < 150) then
+	if (getMoney() >= 200 and pokeballCount < 20) then
 		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
 
 		local specialPokemartsNPCs1 = { -- NPC: 3, 4
@@ -120,8 +120,8 @@ function Quest:pokemart(exitMapName)
 		
 		--pokeballs
 		local pokeballToBuy = 20 - pokeballCount
-		--local maximumBuyablePokeballs = getMoney() / 200
-		local maximumBuyablePokeballs = 20
+		local maximumBuyablePokeballs = getMoney() / 200
+		--local maximumBuyablePokeballs = 20
 		pokeballToBuy = math.min(pokeballToBuy, maximumBuyablePokeballs)
 		
 		if hasShopItem("Pokeball") and getItemQuantity("Pokeball") < 20 and getMoney() >= 200 then
@@ -606,12 +606,18 @@ function Quest:isPokemonBlacklisted(pokemonName)
 	end				 -- but later in the game for pokedex we do.
 end
 
-
+function getOpponentEV()
+	return getOpponentEffortValue("Attack")
+		.. " - " .. getOpponentEffortValue("SpAttack")
+		.. " - " .. getOpponentEffortValue("Defence")
+		.. " - " .. getOpponentEffortValue("SpAttack")
+		.. " - " .. getOpponentEffortValue("Speed")
+end
 
 function Quest:battle()
 	-- catching
-	--[[local isEventPkm = getOpponentForm() ~= 0
-	if isWildBattle() 													--if it's a wild battle:
+	local isEventPkm = getOpponentForm() ~= 0
+	--[[if isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))
@@ -624,8 +630,15 @@ function Quest:battle()
 			return true 
 		end
 	end--]]
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and not isAlreadyCaught())) then
-		return true
+	if isWildBattle()
+		and (isOpponentShiny()
+		or (isInListPokemon(listPokemon, getOpponentName()) and not isAlreadyCaught())
+		or isEventPkm) 
+	then
+		log("Pokemon Opponent EV: ( ATK - SPATK - DEF - SPDEF - SPD ) - ( " .. getOpponentEV() .. " )")
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+			return true 
+		end
 	end
 
 	-- 8th badge Mewtwo fight
@@ -832,6 +845,15 @@ function Quest:learningMove(moveName, pokemonIndex)
 	if self:chooseForgetMove(moveName, pokemonIndex) ~= nil then
 		return forgetMove(self:chooseForgetMove(moveName, pokemonIndex))
 	end
+end
+
+function isInListPokemon(list, val)
+    for key, value in ipairs(list) do
+        if value == val then
+            return true
+        end
+    end
+    return false
 end
 
 return Quest

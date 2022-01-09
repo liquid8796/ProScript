@@ -12,7 +12,7 @@ local listPokemon =
 
 function onStart()
 	setOptionName(1, "Auto relog")
-	setMount("Xmas Dragonite Mount")
+	setMount("Latios Mount")
 	
 	--for longer botting runs
 	if DISABLE_PM and isPrivateMessageEnabled() then

@@ -1,10 +1,6 @@
--- Copyright © 2016 Silv3r <silv3r@proshine-bot.com>
--- This work is free. You can redistribute it and/or modify it under the
--- terms of the Do What The Fuck You Want To Public License, Version 2,
--- as published by Sam Hocevar. See the LICENSE file for more details.
 
 name = "Leveling: Mt. Moon Entrance (near Route 3)"
-author = "Silv3r"
+author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 3 and the entrance of the Mt. Moon.]]

@@ -1,13 +1,22 @@
 
 local listPokemon = {
-	'Pikachu',
-	'Oddish',
-	'Caterpie',
-	'Butterfree',
-	'Budew',
-	'Beedrill',
-	'Weedle',
-	'Rattata',
+	'Arbok',
+	'Gulpin',
+	'Jigglypuff',
+	'Clefairy',
+	'Sandshrew',
+	'Zubat',
+	'Geodude',
+	'Onix',
+	'Paras',
+	'Sandslash',
+	'Rhyhorn',
+	'Honedge',
+	'Bronzor',
+	'Graveler',
+	'Chingling',
+	'Larvitar',
+	
 }
 
 return listPokemon
