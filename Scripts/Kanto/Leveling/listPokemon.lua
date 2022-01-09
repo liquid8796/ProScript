@@ -1,5 +1,5 @@
 local listPokemon = 
 {
-['Furret']=3,['Hoothoot']=1,['Pidgey']=4,['Rattata']=3,['Sentret']=3,['Shinx']=0,['Spinarak']=1,
+['Doduo']=2,['Nidoran F']=2,['Nidoran M']=2,['Poliwag']=1,['Ponyta']=2,['Spearow']=2,['Shinx']=0,
 }
 return listPokemon

@@ -1,5 +1,5 @@
 
-name = "Leveling: Route 10 (near the Pokecenter)"
+name = "Leveling: Route 22 (near the Viridian city)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
@@ -27,20 +27,15 @@ function onPathAction()
 		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
 		elseif getMapName() == "Viridian City" then
-			moveToCell(48,61)
-		elseif getMapName() == "Route 1 Stop House" then
-			moveToCell(3,12)	
-		elseif getMapName() == "Route 1" then
-			--moveToRectangle(18, 12, 25,13)
+			moveToCell(0,48)
+		elseif getMapName() == "Route 22" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			onAntibanPathAction()
 		end
 	else
-		if getMapName() == "Route 1" then
-			moveToCell(14,4)
-		elseif getMapName() == "Route 1 Stop House" then
-			moveToCell(4,2)
+		if getMapName() == "Route 22" then
+			moveToCell(60,11)
 		elseif getMapName() == "Viridian City" then
 			moveToCell(44,43)
 		elseif getMapName() == "Pokecenter Viridian" then
@@ -52,7 +47,7 @@ function onPathAction()
 end
 
 function onBattleAction()
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then		
+	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 5)) then		
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 			return
@@ -107,7 +102,7 @@ end
 
 function isInListPokemon(list, val)
     for key, value in pairs(list) do		
-        if key == val and value < 3 then	
+        if key == val and value < 2 then	
             return true
         end
     end
