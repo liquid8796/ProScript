@@ -7,22 +7,18 @@ Start anywhere between Route 1 or Viridian city.]]
 
 local listPokemon = require "listPokemon"
 
-function addListToFile(list, path)
-	local line = "local listPokemon = \n{\n"
-	for key, value in pairs(list) do		
-        line = line .. "['"..key.."']="..value..","
-    end
-	line = line .. "\n}\nreturn listPokemon"
-	writeToFile(path, line, true)
-end
 function onStart()
 	setOptionName(1, "Auto relog")
 	setMount("Latios Mount")
+	sortTeamByLvAscending()
 	--for longer botting runs
 	return disablePrivateMessage()
 end
 
 function onPathAction()
+	while not isTeamSortedByLevelAscending() do
+		return sortTeamByLevelAscending()
+	end
 	if isPokemonUsable(1) then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
@@ -39,7 +35,8 @@ function onPathAction()
 		elseif getMapName() == "Viridian City" then
 			moveToCell(44,43)
 		elseif getMapName() == "Pokecenter Viridian" then
-			usePokecenter()
+			--usePokecenter()
+			talkToNpcOnCell(9,15)
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			onAntibanPathAction()
 		end
@@ -49,7 +46,6 @@ end
 function onBattleAction()
 	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 5)) then		
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 			return
 		end
 	end
@@ -109,6 +105,21 @@ function isInListPokemon(list, val)
     return false
 end
 
+function addListToFile(list, path)
+	local line = "local listPokemon = \n{"
+	for key, value in pairs(list) do		
+        line = line .. "\n['"..key.."']="..value..","
+    end
+	line = line .. "\n}\nreturn listPokemon"
+	writeToFile(path, line, true)
+end
+
+function sortTeamByLvAscending()
+	while not isTeamSortedByLevelAscending() do
+		return sortTeamRangeByLevelAscending(1, getTeamSize())
+	end
+end
+
 function split(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
@@ -120,9 +131,10 @@ end
 
 function onBattleMessage(message)
 	if stringContains(message, "caught") then
-		addListToFile(listPokemon, "C:\\PRO_Script\\BetterQuesting.lua\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
+		addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--addListToFile(listPokemon, "C:\\PRO_Script\\BetterQuesting.lua\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
-	return false
 end
 
 registerHook("onPathAction", onAntibanPathAction)
