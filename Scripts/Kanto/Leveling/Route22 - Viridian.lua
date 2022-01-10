@@ -6,6 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or Viridian city.]]
 
 local listPokemon = require "listPokemon"
+local maxLv = 15
 
 function onStart()
 	setOptionName(1, "Auto relog")
@@ -14,11 +15,32 @@ function onStart()
 	return disablePrivateMessage()
 end
 
+function getLowestIndexOfUsablePokemon()
+	for i=1,6 do
+		if isPokemonUsable(i) then
+			return i
+		end
+	end
+	return 6
+end
+function isTrainingOver()
+	local count = 0
+	for i=1,6 do
+		if getPokemonLevel(i) >= maxLv then
+			count = count + 1
+		end
+	end
+	if count < 6 then return false end
+	return true
+end
 function onPathAction()
 	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
-	if isPokemonUsable(1) then
+	if isTrainingOver() then
+		fatal("Complete training! Stop the bot.")
+	end
+	if getUsablePokemonCount() > 1 and getPokemonLevel(getLowestIndexOfUsablePokemon()) < maxLv then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
 		elseif getMapName() == "Viridian City" then
@@ -26,7 +48,8 @@ function onPathAction()
 		elseif getMapName() == "Route 22" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			talkToNpc("Prof. Antiban")
 		end
 	else
 		if getMapName() == "Route 22" then
@@ -34,10 +57,10 @@ function onPathAction()
 		elseif getMapName() == "Viridian City" then
 			moveToCell(44,43)
 		elseif getMapName() == "Pokecenter Viridian" then
-			--usePokecenter()
-			talkToNpcOnCell(9,15)
+			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			talkToNpc("Prof. Antiban")
 		end
 	end
 end
@@ -46,14 +69,7 @@ function onBattleAction()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
 	if isTeamUsable then
-		local opponentLevel = getOpponentLevel()
-		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
-		if opponentLevel >= myPokemonLvl then
-			local requestedId, requestedLevel = getMaxLevelUsablePokemon()
-			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
-				return sendPokemon(requestedId) 
-			end
-		end
+		setTeamFightBattle()
 		if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 5)) then		
 			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") or sendUsablePokemon() or sendAnyPokemon() then
 				return
@@ -84,13 +100,6 @@ antibanQuestions = {
 ["Articuno is one of the legendary birds of Kanto."] = "True",
 
 }
-
-function onAntibanPathAction()
-	if getMapName() == "Prof. Antibans Classroom" then
-		log("Quiz detected, talking to the prof.")
-		talkToNpc("Prof. Antiban")
-	end
-end
 
 function onAntibanDialogMessage(message)
 	if getMapName() ~= "Prof. Antibans Classroom" then
@@ -124,6 +133,16 @@ function addListToFile(list, path)
 	writeToFile(path, line, true)
 end
 
+function setTeamFightBattle()
+	local opponentLevel = getOpponentLevel()
+	local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
+	if opponentLevel >= myPokemonLvl then
+		local requestedId, requestedLevel = getMaxLevelUsablePokemon()
+		if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
+			return sendPokemon(requestedId) 
+		end
+	end
+end
 function getMaxLevelUsablePokemon()
 	local currentId
 	local currentLevel
@@ -155,5 +174,4 @@ function onBattleMessage(message)
 	end
 end
 
-registerHook("onPathAction", onAntibanPathAction)
 registerHook("onDialogMessage", onAntibanDialogMessage)
