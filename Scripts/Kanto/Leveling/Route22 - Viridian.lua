@@ -1,9 +1,9 @@
 
-name = "Leveling: Route 22 (near the Viridian city)"
+name = "Leveling: Route 22 (near the Pewter city)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
-Start anywhere between Route 1 or Viridian city.]]
+Start anywhere between Route 1 or Pewter city.]]
 
 local listPokemon = require "listPokemon"
 local maxLv = 15
@@ -15,24 +15,6 @@ function onStart()
 	return disablePrivateMessage()
 end
 
-function getLowestIndexOfUsablePokemon()
-	for i=1,6 do
-		if isPokemonUsable(i) then
-			return i
-		end
-	end
-	return 6
-end
-function isTrainingOver()
-	local count = 0
-	for i=1,6 do
-		if getPokemonLevel(i) >= maxLv then
-			count = count + 1
-		end
-	end
-	if count < 6 then return false end
-	return true
-end
 function onPathAction()
 	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
@@ -91,39 +73,24 @@ function onStop()
 	end
 end
 
-antibanQuestions = {
-
-["What type is Flygon?"] = "Dragon/Ground",
-["How many Pokemon can Eevee currently evolve into?"] = "8",
-["Which of these are effective against Dragon?"] = "Dragon",
-["What level does Litleo evolve into Pyroar?"] = "35",
-["Articuno is one of the legendary birds of Kanto."] = "True",
-
-}
-
-function onAntibanDialogMessage(message)
-	if getMapName() ~= "Prof. Antibans Classroom" then
-		return
-	end
-	if stringContains(message, "incorrect") then
-		fatal("Could not answer correctly, stopping the bot.")
-	end
-	for key, value in pairs(antibanQuestions) do
-		if stringContains(message, key) then
-			pushDialogAnswer(value)
+function getLowestIndexOfUsablePokemon()
+	for i=1,6 do
+		if isPokemonUsable(i) then
+			return i
 		end
 	end
+	return 6
 end
-
-function isInListPokemon(list, val)
-    for key, value in pairs(list) do		
-        if key == val and value < 2 then	
-            return true
-        end
-    end
-    return false
+function isTrainingOver()
+	local count = 0
+	for i=1,6 do
+		if getPokemonLevel(i) >= maxLv then
+			count = count + 1
+		end
+	end
+	if count < 6 then return false end
+	return true
 end
-
 function addListToFile(list, path)
 	local line = "local listPokemon = \n{"
 	for key, value in pairs(list) do		
@@ -156,7 +123,14 @@ function getMaxLevelUsablePokemon()
 	end
 	return currentId, currentLevel
 end
-
+function isInListPokemon(list, val)
+    for key, value in pairs(list) do		
+        if key == val and value < 2 then	
+            return true
+        end
+    end
+    return false
+end
 function split(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
@@ -164,6 +138,29 @@ function split(str, sep)
       table.insert(result, each)
    end
    return result
+end
+
+antibanQuestions = {
+
+["What type is Flygon?"] = "Dragon/Ground",
+["How many Pokemon can Eevee currently evolve into?"] = "8",
+["Which of these are effective against Dragon?"] = "Dragon",
+["What level does Litleo evolve into Pyroar?"] = "35",
+["Articuno is one of the legendary birds of Kanto."] = "True",
+
+}
+function onAntibanDialogMessage(message)
+	if getMapName() ~= "Prof. Antibans Classroom" then
+		return
+	end
+	if stringContains(message, "incorrect") then
+		fatal("Could not answer correctly, stopping the bot.")
+	end
+	for key, value in pairs(antibanQuestions) do
+		if stringContains(message, key) then
+			pushDialogAnswer(value)
+		end
+	end
 end
 
 function onBattleMessage(message)

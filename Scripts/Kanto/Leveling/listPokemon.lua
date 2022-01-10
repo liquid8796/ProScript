@@ -1,11 +1,9 @@
 local listPokemon = 
 {
-['Shinx']=0,
-['Doduo']=2,
-['Nidoran F']=2,
-['Nidoran M']=2,
-['Poliwag']=2,
-['Ponyta']=2,
-['Spearow']=2,
+['Taillow']=1,
+['Beedrill']=0,
+['Budew']=0,
+['Metapod']=0,
+['Snubbull']=1,
 }
 return listPokemon

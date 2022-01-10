@@ -1,23 +1,22 @@
 
-name = "Leveling: Route 2 (near Pewter)"
+name = "Leveling: Viridian Forest"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
-Start anywhere between Pewter City and Route 2.]]
+Start anywhere between Viridian Forest or Pewter city.]]
 
 local listPokemon = require "listPokemon"
-local maxLv = 18
+local maxLv = 20
 
 function onStart()
 	setOptionName(1, "Auto relog")
 	setMount("Latios Mount")
-	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
 	return disablePrivateMessage()
 end
 
 function onPathAction()
-while not isTeamSortedByLevelAscending() do
+	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
 	if isTrainingOver() then
@@ -29,13 +28,22 @@ while not isTeamSortedByLevelAscending() do
 		elseif getMapName() == "Pewter City" then
 			moveToCell(16,55)
 		elseif getMapName() == "Route 2" then
+			moveToCell(10,42)	
+		elseif getMapName() == "Route 2 Stop2" then
+			moveToCell(4,12)
+		elseif getMapName() == "Viridian Forest" then
 			moveToGrass()
+			--moveToRectangle(20, 17, 21, 23) --Coordinator for pikachu
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
 			talkToNpc("Prof. Antiban")
 		end
 	else
-		if getMapName() == "Route 2" then
+		if getMapName() == "Viridian Forest" then
+			moveToCell(12,15)
+		elseif getMapName() == "Route 2 Stop2" then
+			moveToCell(4,2)
+		elseif getMapName() == "Route 2" then
 			moveToCell(25,0)
 		elseif getMapName() == "Pewter City" then
 			moveToCell(24,35)
@@ -163,6 +171,7 @@ function onAntibanDialogMessage(message)
 		end
 	end
 end
+
 function onBattleMessage(message)
 	if stringContains(message, "caught") then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
