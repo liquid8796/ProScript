@@ -84,7 +84,7 @@ function Quest:pokemart(exitMapName)
 	--local escapeRopeCount = getItemQuantity("Escape Rope")
 
 	--pokeballs
-	--[[if (getMoney() >= 200 and pokeballCount < 20) then
+	if (getMoney() >= 200 and pokeballCount < 20) then
 		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
 
 		local specialPokemartsNPCs1 = { -- NPC: 3, 4
@@ -161,7 +161,7 @@ function Quest:pokemart(exitMapName)
 		else
 			return moveToCell(6, 12)
 		end
-	end--]]
+	end
 end
 
 

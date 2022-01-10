@@ -7,7 +7,7 @@ local Dialog = require "Quests/Dialog"
 
 local name        = 'Mt. Moon Fossil'
 local description = 'from Route 3 to Cerulean City'
-local level       = 50
+local level       = 30
 
 local dialogs = {
 	fossileGuyBeaten = Dialog:new({
@@ -57,7 +57,8 @@ function MoonFossilQuest:MtMoon1F()
 		return moveToCell(38, 63)
 	elseif not self:isTrainingOver() then
 		sys.debug("quest", "Going to train Pokemon until they are all level " .. self.level .. ".")
-		return moveToRectangle(37, 60, 40, 62)
+		--return moveToRectangle(37, 60, 40, 62)
+		return moveToNormalGround()
 	else
 		sys.debug("quest", "Going to Mt. Moon B1F.")
 		return moveToCell(21, 20) -- Mt. Moon B1F
