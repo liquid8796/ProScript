@@ -17,7 +17,7 @@ function onStart()
 end
 
 function onPathAction()
-while not isTeamSortedByLevelAscending() do
+	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
 	if isTrainingOver() then
@@ -54,11 +54,13 @@ function onBattleAction()
 	if isTeamUsable then
 		setTeamFightBattle()
 		if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 6)) then		
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") or sendUsablePokemon() or sendAnyPokemon() then
+			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 				return
+			else
+				return attack() or sendUsablePokemon() or sendAnyPokemon() or run() 
 			end
 		else
-			return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
+			return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
 		end
 	else
 		--relog(1,"Restart for healing!")

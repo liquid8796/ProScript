@@ -1,10 +1,3 @@
----@author: m1l4
----@comment: copied and reduced code from TeamManager class which wasn't finished at the I copyPasted it here,
----so there might be redundancies. Additionally: simplifications of the current code through usage of this module
----are only done sparsly - those will be coming with future updates a litte at a time
----@attention: functions, variables and comments are reffering another project's context. So keep that in mind
----when reading comments :)
--- -------------------------
 
 local gen = require("Libs/genlib")
 local game = require ("Libs/gamelib")

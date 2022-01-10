@@ -6,11 +6,12 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Viridian Forest or Pewter city.]]
 
 local listPokemon = require "listPokemon"
-local maxLv = 20
+local maxLv = 16
 
 function onStart()
 	setOptionName(1, "Auto relog")
 	setMount("Latios Mount")
+	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
 	return disablePrivateMessage()
 end
