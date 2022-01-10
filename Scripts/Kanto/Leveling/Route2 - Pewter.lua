@@ -52,8 +52,15 @@ function onBattleAction()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
 	if isTeamUsable then
-		setTeamFightBattle()
-		if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() > 6)) then		
+		local opponentLevel = getOpponentLevel()
+		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
+		if opponentLevel >= myPokemonLvl then
+			local requestedId, requestedLevel = getMaxLevelUsablePokemon()
+			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
+				return sendPokemon(requestedId) 
+			end
+		end
+		if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then		
 			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 				return
 			else
@@ -168,8 +175,8 @@ end
 function onBattleMessage(message)
 	if stringContains(message, "caught") then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
-		addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		--addListToFile(listPokemon, "C:\\PRO_Script\\BetterQuesting.lua\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 

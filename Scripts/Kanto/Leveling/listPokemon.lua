@@ -1,7 +1,7 @@
 local listPokemon = 
 {
-['Taillow']=1,
-['Beedrill']=0,
+['Taillow']=2,
+['Beedrill']=1,
 ['Budew']=0,
 ['Snubbull']=2,
 }
