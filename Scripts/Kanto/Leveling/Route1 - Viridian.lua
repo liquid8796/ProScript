@@ -1,29 +1,25 @@
 
-name = "Leveling: Route 10 (near the Pokecenter)"
+name = "Leveling: Route 10 (near Viridian city)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or Viridian city.]]
 
-local listPokemon = require "listPokemon"
+local team = require "teamlib"
+local maxLv = 10
 
-function addListToFile(list, path)
-	local line = "local listPokemon = \n{\n"
-	for key, value in pairs(list) do		
-        line = line .. "['"..key.."']="..value..","
-    end
-	line = line .. "\n}\nreturn listPokemon"
-	writeToFile(path, line, true)
-end
 function onStart()
-	setOptionName(1, "Auto relog")
-	setMount("Latios Mount")
-	--for longer botting runs
-	return disablePrivateMessage()
+	return team.onStart(maxLv)
 end
 
 function onPathAction()
-	if isPokemonUsable(1) then
+	while not isTeamSortedByLevelAscending() do
+		return sortTeamByLevelAscending()
+	end
+	if team.isTrainingOver(maxLv) then
+		return fatal("Complete training! Stop the bot.")
+	end
+	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
 		elseif getMapName() == "Viridian City" then
@@ -34,7 +30,8 @@ function onPathAction()
 			--moveToRectangle(18, 12, 25,13)
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			talkToNpc("Prof. Antiban")
 		end
 	else
 		if getMapName() == "Route 1" then
@@ -46,24 +43,14 @@ function onPathAction()
 		elseif getMapName() == "Pokecenter Viridian" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			talkToNpc("Prof. Antiban")
 		end
 	end
 end
 
 function onBattleAction()
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()))) then		
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
-			return
-		end
-	end
-	if getActivePokemonNumber() == 1 then
-		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-	else
-		--relog(1,"Restart for healing!")
-		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-	end
+	return team.onBattleFighting()
 end
 
 function onStop()
@@ -74,61 +61,10 @@ function onStop()
 	end
 end
 
-antibanQuestions = {
-
-["What type is Flygon?"] = "Dragon/Ground",
-["How many Pokemon can Eevee currently evolve into?"] = "8",
-["Which of these are effective against Dragon?"] = "Dragon",
-["What level does Litleo evolve into Pyroar?"] = "35",
-["Articuno is one of the legendary birds of Kanto."] = "True",
-
-}
-
-function onAntibanPathAction()
-	if getMapName() == "Prof. Antibans Classroom" then
-		log("Quiz detected, talking to the prof.")
-		talkToNpc("Prof. Antiban")
-	end
-end
-
-function onAntibanDialogMessage(message)
-	if getMapName() ~= "Prof. Antibans Classroom" then
-		return
-	end
-	if stringContains(message, "incorrect") then
-		fatal("Could not answer correctly, stopping the bot.")
-	end
-	for key, value in pairs(antibanQuestions) do
-		if stringContains(message, key) then
-			pushDialogAnswer(value)
-		end
-	end
-end
-
-function isInListPokemon(list, val)
-    for key, value in pairs(list) do		
-        if key == val and value < 3 then	
-            return true
-        end
-    end
-    return false
-end
-
-function split(str, sep)
-   local result = {}
-   local regex = ("([^%s]+)"):format(sep)
-   for each in str:gmatch(regex) do
-      table.insert(result, each)
-   end
-   return result
-end
-
 function onBattleMessage(message)
-	if stringContains(message, "caught") then
-		addListToFile(listPokemon, "C:\\PRO_Script\\BetterQuesting.lua\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-	end
-	return false
+	return team.onBattleMessage(message)
 end
 
-registerHook("onPathAction", onAntibanPathAction)
-registerHook("onDialogMessage", onAntibanDialogMessage)
+function onDialogMessage(message)
+	return team.onAntibanDialogMessage(message)
+end

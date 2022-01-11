@@ -1,20 +1,36 @@
 local listPokemon = require "listPokemon"
+local mountList = require "mountList"
+local timeLeft = 0
 
 team = {}
+
+function team.onStart(maxLv)
+	setOptionName(1, "Auto relog")
+	for key, mount in ipairs(mountList) do
+		if hasItem(mount) then
+			setMount(mount)
+			break
+		end
+	end
+	log("Training pokemon until reach level "..maxLv)
+	--for longer botting runs
+	return disablePrivateMessage()
+end
 
 function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
-	if isTeamUsable and getOpponentName() == "Paras" then
+	if isTeamUsable then
+		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName())))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
-		if opponentLevel >= myPokemonLvl then
+		if opponentLevel >= myPokemonLvl and not huntCondition then
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
 			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
 				return sendPokemon(requestedId) 
 			end
 		end
-		if isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()))) then		
+		if huntCondition then		
 			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 				return
 			else
@@ -29,16 +45,18 @@ function team.onBattleFighting()
 	end
 end
 function team.getLowestIndexOfUsablePokemon()
-	for i=1,6 do
+	local size = getTeamSize()
+	for i=1,size do
 		if isPokemonUsable(i) then
 			return i
 		end
 	end
-	return 6
+	return size
 end
 function team.isTrainingOver(maxLv)
 	local count = 0
-	for i=1,6 do
+	local size = getTeamSize()
+	for i=1,size do
 		if getPokemonLevel(i) >= maxLv then
 			count = count + 1
 		end
@@ -69,13 +87,13 @@ function team.addListToFile(list, path)
 end
 function team.isInListPokemon(list, val)
     for key, value in pairs(list) do		
-        if key == val and value < 2 then	
+        if key == val and value < 2 then
             return true
         end
     end
     return false
 end
-function split(str, sep)
+function team.split(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
    for each in str:gmatch(regex) do
@@ -83,12 +101,18 @@ function split(str, sep)
    end
    return result
 end
+function team.delay(waitTime)
+    timer = os.time()
+	log((waitTime-os.time()-timer).."s remaining...")
+    repeat until os.time() > timer + waitTime
+end
+
 
 function team.onBattleMessage(message)
 	if stringContains(message, "caught") then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
-		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 
@@ -103,7 +127,7 @@ antibanQuestions = {
 }
 
 function team.onAntibanDialogMessage(message)
-	if getMapName() ~= "Prof. Antibans Classroom" then
+	--[[if getMapName() ~= "Prof. Antibans Classroom" then
 		return
 	end
 	if stringContains(message, "incorrect") then
@@ -112,10 +136,30 @@ function team.onAntibanDialogMessage(message)
 	for key, value in pairs(antibanQuestions) do
 		if stringContains(message, key) then
 			pushDialogAnswer(value)
+		end
+	end--]]
+	--[[if getMapName() ~= "Prof. Antibans Classroom" then
+		return
+	end--]]
+	if stringContains(message, "take care of") then
+		timeLeft = timeLeft + 1
+		local n = 1
+		if timeLeft > 1 then 
+			timeLeft = 0
+			relog(5,"Restart 5s for amtiban!")
 		else
-			pushDialogAnswer(1)
+			log("time remaining: "..(n-timeLeft))
 		end
 	end
+	if getMapName() == "Prof. Antibans Classroom" then
+		if stringContains(message, "incorrect") then
+			fatal("Could not answer correctly, stopping the bot.")
+		end
+		math.randomseed(os.clock()*100000000000)
+		local ran = math.random(1, 2)
+		pushDialogAnswer(ran)
+	end
+	
 end
 
 return team
