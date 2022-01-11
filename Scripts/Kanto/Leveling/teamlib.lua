@@ -111,8 +111,9 @@ end
 function team.onBattleMessage(message)
 	if stringContains(message, "caught") then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
-		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		--team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		log(getItemQuantity("Pokeball").." pokeballs left")
+		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 
@@ -141,7 +142,7 @@ function team.onAntibanDialogMessage(message)
 	--[[if getMapName() ~= "Prof. Antibans Classroom" then
 		return
 	end--]]
-	if stringContains(message, "take care of") then
+	--[[if stringContains(message, "take care of") then
 		timeLeft = timeLeft + 1
 		local n = 1
 		if timeLeft > 1 then 
@@ -150,10 +151,10 @@ function team.onAntibanDialogMessage(message)
 		else
 			log("time remaining: "..(n-timeLeft))
 		end
-	end
+	end--]]
 	if getMapName() == "Prof. Antibans Classroom" then
 		if stringContains(message, "incorrect") then
-			fatal("Could not answer correctly, stopping the bot.")
+			logout("Could not answer correctly, stopping the bot.")
 		end
 		math.randomseed(os.clock()*100000000000)
 		local ran = math.random(1, 2)
