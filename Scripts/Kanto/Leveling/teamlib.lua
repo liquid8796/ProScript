@@ -87,8 +87,8 @@ end
 function team.onBattleMessage(message)
 	if stringContains(message, "caught") then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
-		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		--addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 
@@ -112,6 +112,8 @@ function team.onAntibanDialogMessage(message)
 	for key, value in pairs(antibanQuestions) do
 		if stringContains(message, key) then
 			pushDialogAnswer(value)
+		else
+			pushDialogAnswer(1)
 		end
 	end
 end

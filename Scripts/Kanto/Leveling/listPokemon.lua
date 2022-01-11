@@ -4,8 +4,8 @@ local listPokemon =
 ['Budew']=0,
 ['Gulpin']=0,
 ['Clefairy']=0,
-['Geodude']=0,
-['Onix']=0,
-['Sandslash']=0,
+['Geodude']=2,
+['Onix']=1,
+['Sandslash']=2,
 }
 return listPokemon
