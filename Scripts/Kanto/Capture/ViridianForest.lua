@@ -5,24 +5,21 @@ description = [[This script will track the desire pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere in Viridian Forest.]]
 
-local listPokemon = 
-{
-'Pikachu','Oddish','Caterpie','Butterfree','Budew','Beedrill','Weedle','Rattata',
-}
+local team = require "teamlib"
+local maxLv = 10
 
 function onStart()
-	setOptionName(1, "Auto relog")
-	setMount("Xmas Dragonite Mount")
-	
-	--for longer botting runs
-	if DISABLE_PM and isPrivateMessageEnabled() then
-		log("Private messages disabled.")
-		return disablePrivateMessage()
-	end
+	return team.onStart(maxLv)
 end
 
 function onPathAction()
-	if isPokemonUsable(1) then
+	while not isTeamSortedByLevelAscending() do
+		return sortTeamByLevelAscending()
+	end
+	if team.isTrainingOver(maxLv) then
+		return fatal("Complete training! Stop the bot.")
+	end
+	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
 		if getMapName() == "Pokecenter Pewter" then
 			moveToCell(9,22)
 		elseif getMapName() == "Pewter City" then
@@ -35,7 +32,9 @@ function onPathAction()
 			moveToGrass()
 			--moveToRectangle(20, 17, 21, 23) --Coordinator for pikachu
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
+			talkToNpc("Prof. Antiban")
 		end
 	else
 		if getMapName() == "Viridian Forest" then
@@ -49,58 +48,29 @@ function onPathAction()
 		elseif getMapName() == "Pokecenter Pewter" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			onAntibanPathAction()
+			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
+			talkToNpc("Prof. Antiban")
 		end
 	end
 end
 
 function onBattleAction()
-	if isWildBattle() and (isOpponentShiny() or (isInListPokemon(listPokemon, getOpponentName()) and not isAlreadyCaught())) then
-		return fatal("Your desire pokemon has been found!")
+	return team.onBattleFighting()
+end
+
+function onStop()
+	if getOption(1) then
+		return relog(2,"Restart bot after 2s")
 	else
-		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-	end
-end
-
-antibanQuestions = {
-
-["What type is Flygon?"] = "Dragon/Ground",
-["How many Pokemon can Eevee currently evolve into?"] = "8",
-["Which of these are effective against Dragon?"] = "Dragon",
-["What level does Litleo evolve into Pyroar?"] = "35",
-["Articuno is one of the legendary birds of Kanto."] = "True",
-
-}
-
-function onAntibanPathAction()
-	if getMapName() == "Prof. Antibans Classroom" then
-		log("Quiz detected, talking to the prof.")
-		talkToNpc("Prof. Antiban")
-	end
-end
-
-function onAntibanDialogMessage(message)
-	if getMapName() ~= "Prof. Antibans Classroom" then
 		return
 	end
-	if stringContains(message, "incorrect") then
-		fatal("Could not answer correctly, stopping the bot.")
-	end
-	for key, value in pairs(antibanQuestions) do
-		if stringContains(message, key) then
-			pushDialogAnswer(value)
-		end
-	end
 end
 
-function isInListPokemon(list, val)
-    for key, value in ipairs(list) do
-        if value == val then
-            return true
-        end
-    end
-    return false
+function onBattleMessage(message)
+	return team.onBattleMessage(message)
 end
 
-registerHook("onPathAction", onAntibanPathAction)
-registerHook("onDialogMessage", onAntibanDialogMessage)
+function onDialogMessage(message)
+	return team.onAntibanDialogMessage(message)
+end

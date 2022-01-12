@@ -141,46 +141,10 @@ function ViridianSchoolQuest:Route22()
 	elseif self:isTrainingOver() then
 		sys.debug("quest", "Going to continue Quest.")
 		return moveToCell(60, 12)
-	elseif getMapName() == "Prof. Antibans Classroom" then
-		onAntibanPathAction()
 	else
 		sys.debug("quest", "Going to train Pokemon until they all reached level " .. self.level .. ".")
 		return moveToGrass()
 	end	
 end
-
-antibanQuestions = {
-
-["What type is Flygon?"] = "Dragon/Ground",
-["How many Pokemon can Eevee currently evolve into?"] = "8",
-["Which of these are effective against Dragon?"] = "Dragon",
-["What level does Litleo evolve into Pyroar?"] = "35",
-["Articuno is one of the legendary birds of Kanto."] = "True",
-
-}
-
-function onAntibanPathAction()
-	if getMapName() == "Prof. Antibans Classroom" then
-		log("Quiz detected, talking to the prof.")
-		talkToNpc("Prof. Antiban")
-	end
-end
-
-function onAntibanDialogMessage(message)
-	if getMapName() ~= "Prof. Antibans Classroom" then
-		return
-	end
-	if stringContains(message, "incorrect") then
-		fatal("Could not answer correctly, stopping the bot.")
-	end
-	for key, value in pairs(antibanQuestions) do
-		if stringContains(message, key) then
-			pushDialogAnswer(value)
-		end
-	end
-end
-
-registerHook("onPathAction", onAntibanPathAction)
-registerHook("onDialogMessage", onAntibanDialogMessage)
 
 return ViridianSchoolQuest
