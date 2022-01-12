@@ -11,7 +11,7 @@ local Dialog = require "Quests/Dialog"
 
 local name        = 'Viridian School'
 local description = 'from Route 1 to Route 2'
-local level = 15
+local level = 8
 
 local dialogs = {
 	jacksonDefeated = Dialog:new({
@@ -85,9 +85,9 @@ function ViridianSchoolQuest:ViridianCity()
 		sys.debug("quest", "Going to heal Pokemon")
 		return moveToCell(44, 43)
 
-	--elseif self:needPokemart() then
-		--sys.debug("quest", "Going to buy Pokeballs")
-		--return moveToCell(54, 34)
+	elseif self:needPokemart() then
+		sys.debug("quest", "Going to buy Pokeballs")
+		return moveToCell(54, 34)
 
 	elseif not self.dialogs.jacksonDefeated.state and self:isTrainingOver() then
 		sys.debug("quest", "Going to fight Jackson")

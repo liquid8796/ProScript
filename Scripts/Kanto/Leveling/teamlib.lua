@@ -6,6 +6,7 @@ team = {}
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
+	setOptionName(2, "EVs training")
 	for key, mount in ipairs(mountList) do
 		if hasItem(mount) then
 			setMount(mount)
@@ -28,6 +29,13 @@ function team.onBattleFighting()
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
 			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
 				return sendPokemon(requestedId) 
+			end
+		end
+		if getOption(2) then
+			if getOpponentName() == "Paras" then
+				return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
+			else
+				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 			end
 		end
 		if huntCondition then		
@@ -112,8 +120,8 @@ function team.onBattleMessage(message)
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		--team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 

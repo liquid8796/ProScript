@@ -7,7 +7,7 @@ local Dialog = require "Quests/Dialog"
 
 local name        = 'Mt. Moon Fossil'
 local description = 'from Route 3 to Cerulean City'
-local level       = 30
+local level       = 20
 
 local dialogs = {
 	fossileGuyBeaten = Dialog:new({

@@ -1,6 +1,6 @@
 local listPokemon = 
 {
 ['Shinx']=1,
-['Oddish']=1,
+['Arbok']=2,
 }
 return listPokemon

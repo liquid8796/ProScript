@@ -13,7 +13,7 @@ local luaPokemonData = require "Data/luaPokemonData"
 
 local name        = 'Boulder Badge'
 local description = 'from route 2 to route 3'
-local level = 25
+local level = 14
 
 local BoulderBadgeQuest = Quest:new()
 function BoulderBadgeQuest:new()
@@ -129,9 +129,9 @@ function BoulderBadgeQuest:PewterCity()
 	if isNpcOnCell(23, 22) then
 		sys.debug("quest", "Going to talk/fight Red blocking the way.")
 		return talkToNpcOnCell(23, 22)
-	elseif self:needPokemart() then
-		sys.debug("quest", "Going to buy Pokeballs.")
-		return moveToCell(37, 26)
+	--elseif self:needPokemart() then
+		--sys.debug("quest", "Going to buy Pokeballs.")
+		--return moveToCell(37, 26)
 	elseif hasItem("Boulder Badge") then
 		sys.debug("quest", "Going to Route 3")
 		return moveToCell(65, 34)

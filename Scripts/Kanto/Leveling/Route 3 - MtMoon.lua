@@ -9,11 +9,7 @@ local team = require "teamlib"
 local maxLv = 25
 
 function onStart()
-	setOptionName(1, "Auto relog")
-	setMount("Latios Mount")
-	log("Training pokemon until reach level "..maxLv)
-	--for longer botting runs
-	return disablePrivateMessage()
+	return team.onStart(maxLv)
 end
 
 function onPathAction()
@@ -21,7 +17,7 @@ function onPathAction()
 		return sortTeamByLevelAscending()
 	end
 	if team.isTrainingOver(maxLv) then
-		fatal("Complete training! Stop the bot.")
+		return fatal("Complete training! Stop the bot.")
 	end
 	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
 		if getMapName() == "Pokecenter Route 3" then
@@ -32,6 +28,7 @@ function onPathAction()
 			moveToNormalGround()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	else
@@ -43,6 +40,7 @@ function onPathAction()
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	end

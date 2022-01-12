@@ -5,7 +5,8 @@ local game = require "Libs/gamelib"
 local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
-local listPokemon = require "listPokemon"
+--local listPokemon = require "listPokemon"
+local catch_mode = 0
 
 local Quest = {}
 
@@ -84,7 +85,7 @@ function Quest:pokemart(exitMapName)
 	--local escapeRopeCount = getItemQuantity("Escape Rope")
 
 	--pokeballs
-	if (getMoney() >= 200 and pokeballCount < 20) then
+	if (getMoney() >= 200 and pokeballCount < 150) then
 		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
 
 		local specialPokemartsNPCs1 = { -- NPC: 3, 4
@@ -119,12 +120,12 @@ function Quest:pokemart(exitMapName)
 		--else prepare buying
 		
 		--pokeballs
-		local pokeballToBuy = 20 - pokeballCount
+		local pokeballToBuy = 150 - pokeballCount
 		local maximumBuyablePokeballs = getMoney() / 200
 		--local maximumBuyablePokeballs = 20
 		pokeballToBuy = math.min(pokeballToBuy, maximumBuyablePokeballs)
 		
-		if hasShopItem("Pokeball") and getItemQuantity("Pokeball") < 20 and getMoney() >= 200 then
+		if hasShopItem("Pokeball") and getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
 			if buyItem("Pokeball", pokeballToBuy) then
 				sys.debug("pokemart", "bought " .. math.floor(pokeballToBuy) .. " Pokeballs.")
 			end
@@ -264,7 +265,7 @@ end
 
 function Quest:needPokemart()
 	-- TODO: ItemManager
-	if getItemQuantity("Pokeball") < 20 and getMoney() >= 200 then
+	if getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
 		return true
 	end
 	return false
@@ -317,7 +318,7 @@ function Quest:evolvePokemon()
 	--local lowestLvl = team.getLowestLvl()
 	--if lowestLvl >= 90 then enableAutoEvolve() end
 	
-	if self.name == "Go to Hoenn" then
+	--[[if self.name == "Go to Hoenn" then
 		if getPokemonName(1) == "Rattata" then
 			disableAutoEvolve()
 		else
@@ -327,7 +328,7 @@ function Quest:evolvePokemon()
 	else
 		--enableAutoEvolve()
 		disableAutoEvolve()
-	end
+	end--]]
 
 	-- or team.getHighestLvl() >= 93 --not leveling mixed teams efficiently: lv 38, ...., lv 93
 
@@ -617,7 +618,7 @@ end
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if isWildBattle() 													--if it's a wild battle:
+	if catch_mode == 1 and isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))
@@ -626,9 +627,9 @@ function Quest:battle()
 				and self.forceCaught ~= nil
 				and self.forceCaught == false))
 	then
-		--[[if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then 
 			return true 
-		end--]]
+		end
 	end
 	--[[if isWildBattle()
 		and (isOpponentShiny()
