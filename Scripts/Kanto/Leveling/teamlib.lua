@@ -3,7 +3,7 @@ local mountList = require "mountList"
 local timeLeft = 0
 
 team = {}
-
+local ran = 1
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
 	setOptionName(2, "EVs training")
@@ -22,7 +22,7 @@ function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
 	if isTeamUsable then
-		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName())))
+		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() >= 5))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
 		if opponentLevel >= myPokemonLvl and not huntCondition then
@@ -162,13 +162,17 @@ function team.onAntibanDialogMessage(message)
 	end--]]
 	if getMapName() == "Prof. Antibans Classroom" then
 		if stringContains(message, "incorrect") then
-			logout("Could not answer correctly, stopping the bot.")
+			log("Could not answer correctly, try another answer.")
+			if ran < 3 then
+				pushDialogAnswer(ran+1)
+			else
+				ran = 1
+				pushDialogAnswer(ran)
+			end
+		else
+			pushDialogAnswer(ran)
 		end
-		math.randomseed(os.clock()*100000000000)
-		local ran = math.random(1, 2)
-		pushDialogAnswer(ran)
 	end
-	
 end
 
 return team

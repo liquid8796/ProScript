@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or Pewter city.]]
 
 local team = require "teamlib"
-local maxLv = 15
+local maxLv = 14
 
 function onStart()
 	return team.onStart(maxLv)
@@ -28,6 +28,7 @@ function onPathAction()
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	else
@@ -39,6 +40,7 @@ function onPathAction()
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	end
