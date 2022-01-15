@@ -4,13 +4,18 @@ local timeLeft = 0
 
 team = {}
 local ran = 1
+local isMount = false
+local only_search = false
+
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
 	setOptionName(2, "EVs training")
-	for key, mount in ipairs(mountList) do
-		if hasItem(mount) then
-			setMount(mount)
-			break
+	if isMount then
+		for key, mount in ipairs(mountList) do
+			if hasItem(mount) then
+				setMount(mount)
+				break
+			end
 		end
 	end
 	log("Training pokemon until reach level "..maxLv)
@@ -20,17 +25,20 @@ end
 
 function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
-		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
+		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm	
 	if isTeamUsable then
 		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() >= 5))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
+		if only_search and huntCondition then
+			fatal("Found your desired pokemon!")
+		end
 		if opponentLevel >= myPokemonLvl and not huntCondition then
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
 			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
 				return sendPokemon(requestedId) 
 			end
-		end
+		end		
 		if getOption(2) then
 			if getOpponentName() == "Paras" then
 				return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
@@ -69,7 +77,7 @@ function team.isTrainingOver(maxLv)
 			count = count + 1
 		end
 	end
-	if count < 6 then return false end
+	if count < size then return false end
 	return true
 end
 function team.getMaxLevelUsablePokemon()
@@ -120,8 +128,8 @@ function team.onBattleMessage(message)
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--team.addListToFile(listPokemon, "C:\\PRO_Script\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
 

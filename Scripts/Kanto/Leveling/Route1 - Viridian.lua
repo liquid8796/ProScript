@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or Viridian city.]]
 
 local team = require "teamlib"
-local maxLv = 8
+local maxLv = 10
 
 function onStart()
 	return team.onStart(maxLv)
@@ -27,10 +27,10 @@ function onPathAction()
 		elseif getMapName() == "Route 1 Stop House" then
 			moveToCell(3,12)	
 		elseif getMapName() == "Route 1" then
-			--moveToRectangle(18, 12, 25,13)
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	else
@@ -44,6 +44,7 @@ function onPathAction()
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
+			pushDialogAnswer(1)
 			talkToNpc("Prof. Antiban")
 		end
 	end
