@@ -5,7 +5,11 @@ local timeLeft = 0
 team = {}
 local ran = 1
 local isMount = false
-local only_search = false
+local only_search = true
+
+function team.isSearching()
+	return only_search
+end
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
@@ -31,14 +35,16 @@ function team.onBattleFighting()
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
 		if only_search and huntCondition then
-			fatal("Found your desired pokemon!")
+			return fatal("Found your desired pokemon!")
+		elseif only_search and not huntCondition then
+			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 		end
 		if opponentLevel >= myPokemonLvl and not huntCondition then
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
 			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
 				return sendPokemon(requestedId) 
 			end
-		end		
+		end	
 		if getOption(2) then
 			if getOpponentName() == "Paras" then
 				return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
@@ -77,7 +83,7 @@ function team.isTrainingOver(maxLv)
 			count = count + 1
 		end
 	end
-	if count < size then return false end
+	if count < size and not only_search then return false end
 	return true
 end
 function team.getMaxLevelUsablePokemon()

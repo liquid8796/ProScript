@@ -14,6 +14,8 @@ local waterMountList = require "waterMountList"
 local canBuyGreatballs = false
 local canBuyUltraballs = false
 
+local ran = 1
+
 function onStart()
 	setOptionName(1, "Relog on stop")
 
@@ -75,11 +77,16 @@ end
 function onDialogMessage(message)
 	if getMapName() == "Prof. Antibans Classroom" then
 		if stringContains(message, "incorrect") then
-			logout("Could not answer correctly, stopping the bot.")
+			log("Could not answer correctly, try another answer.")
+			if ran < 3 then
+				pushDialogAnswer(ran+1)
+			else
+				ran = 1
+				pushDialogAnswer(ran)
+			end
+		else
+			pushDialogAnswer(ran)
 		end
-		math.randomseed(os.clock()*100000000000)
-		local ran = math.random(1, 2)
-		pushDialogAnswer(ran)
 	end
 	questManager:dialog(message)
 end

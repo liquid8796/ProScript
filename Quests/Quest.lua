@@ -6,7 +6,7 @@ local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
 --local listPokemon = require "listPokemon"
-local catch_mode = 0
+local catch_mode = false
 
 local Quest = {}
 
@@ -318,17 +318,17 @@ function Quest:evolvePokemon()
 	--local lowestLvl = team.getLowestLvl()
 	--if lowestLvl >= 90 then enableAutoEvolve() end
 	
-	--[[if self.name == "Go to Hoenn" then
+	if self.name == "Go to Hoenn" then
 		if getPokemonName(1) == "Rattata" then
 			disableAutoEvolve()
 		else
-			--enableAutoEvolve()
-			disableAutoEvolve()
+			enableAutoEvolve()
+			--disableAutoEvolve()
 		end
 	else
-		--enableAutoEvolve()
-		disableAutoEvolve()
-	end--]]
+		enableAutoEvolve()
+		--disableAutoEvolve()
+	end
 
 	-- or team.getHighestLvl() >= 93 --not leveling mixed teams efficiently: lv 38, ...., lv 93
 
@@ -618,7 +618,7 @@ end
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if catch_mode == 0 and isWildBattle() 													--if it's a wild battle:
+	if not catch_mode and isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))
