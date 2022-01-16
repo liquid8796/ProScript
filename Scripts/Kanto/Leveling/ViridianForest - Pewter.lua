@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Viridian Forest or Pewter city.]]
 
 local team = require "teamlib"
-local maxLv = 18
+local maxLv = 14
 
 function onStart()
 	return team.onStart(maxLv)
@@ -16,10 +16,13 @@ function onPathAction()
 	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
-	if team.isTrainingOver(maxLv) then
-		return fatal("Complete training! Stop the bot.")
+	if team.isTrainingOver(maxLv) and not team.isSearching() then
+		return logout("Complete training! Stop the bot.")
 	end
-	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
+	if getUsablePokemonCount() > 1 
+		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
+		or team.isSearching())
+	then
 		if getMapName() == "Pokecenter Pewter" then
 			moveToCell(9,22)
 		elseif getMapName() == "Pewter City" then
@@ -29,8 +32,8 @@ function onPathAction()
 		elseif getMapName() == "Route 2 Stop2" then
 			moveToCell(4,12)
 		elseif getMapName() == "Viridian Forest" then
-			--moveToGrass()
-			moveToRectangle(20, 17, 21, 23) --Coordinator for pikachu
+			moveToGrass()
+			--moveToRectangle(20, 17, 21, 23) --Coordinator for pikachu
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
 			pushDialogAnswer(1)

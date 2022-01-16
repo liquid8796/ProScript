@@ -7,6 +7,8 @@ local team = require "Libs/teamlib"
 local blacklist = require "blacklist"
 --local listPokemon = require "listPokemon"
 local catch_mode = false
+local isNeedPokemart = false
+local isAllowEvolve = false
 
 local Quest = {}
 
@@ -265,7 +267,7 @@ end
 
 function Quest:needPokemart()
 	-- TODO: ItemManager
-	if getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
+	if isNeedPokemart and getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
 		return true
 	end
 	return false
@@ -317,6 +319,9 @@ function Quest:evolvePokemon()
 	
 	--local lowestLvl = team.getLowestLvl()
 	--if lowestLvl >= 90 then enableAutoEvolve() end
+	if not isAllowEvolve then
+		return
+	end
 	
 	if self.name == "Go to Hoenn" then
 		if getPokemonName(1) == "Rattata" then
@@ -618,7 +623,7 @@ end
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if not catch_mode and isWildBattle() 													--if it's a wild battle:
+	if catch_mode and isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))

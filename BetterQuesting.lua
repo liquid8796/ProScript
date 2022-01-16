@@ -15,22 +15,25 @@ local canBuyGreatballs = false
 local canBuyUltraballs = false
 
 local ran = 1
+local isNeedMount = false
 
 function onStart()
 	setOptionName(1, "Relog on stop")
-
-	for key, mount in ipairs(mountList) do
-		if hasItem(mount) then
-			setMount(mount)
-			break
-		end
-	end
 	
-	for key, waterMount in ipairs(waterMountList) do
-		if hasItem(waterMount) then
-			setWaterMount(waterMount)
-			break
+	if isNeedMount then
+		for key, mount in ipairs(mountList) do
+			if hasItem(mount) then
+				setMount(mount)
+				break
+			end
 		end
+		
+		for key, waterMount in ipairs(waterMountList) do
+			if hasItem(waterMount) then
+				setWaterMount(waterMount)
+				break
+			end
+		end	
 	end
 
 	math.randomseed(os.time())

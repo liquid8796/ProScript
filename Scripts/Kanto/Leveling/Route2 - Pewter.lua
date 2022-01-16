@@ -16,10 +16,13 @@ function onPathAction()
 	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
-	if team.isTrainingOver(maxLv) then
-		return fatal("Complete training! Stop the bot.")
+	if team.isTrainingOver(maxLv) and not team.isSearching() then
+		return logout("Complete training! Stop the bot.")
 	end
-	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
+	if getUsablePokemonCount() > 1 
+		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
+		or team.isSearching())
+	then
 		if getMapName() == "Pokecenter Pewter" then
 			moveToCell(9,22)
 		elseif getMapName() == "Pewter City" then

@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 3 and the entrance of the Mt. Moon.]]
 
 local team = require "teamlib"
-local maxLv = 50
+local maxLv = 20
 
 function onStart()
 	return team.onStart(maxLv)
@@ -16,10 +16,13 @@ function onPathAction()
 	while not isTeamSortedByLevelAscending() do
 		return sortTeamByLevelAscending()
 	end
-	if team.isTrainingOver(maxLv) then
-		return fatal("Complete training! Stop the bot.")
+	if team.isTrainingOver(maxLv) and not team.isSearching() then
+		return logout("Complete training! Stop the bot.")
 	end
-	if getUsablePokemonCount() > 1 and getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv then
+	if getUsablePokemonCount() > 1 
+		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
+		or team.isSearching())
+	then
 		if getMapName() == "Pokecenter Route 3" then
 			moveToCell(9,22)
 		elseif getMapName() == "Route 3" then

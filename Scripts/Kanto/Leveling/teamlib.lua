@@ -5,15 +5,15 @@ local timeLeft = 0
 team = {}
 local ran = 1
 local isMount = false
-local only_search = true
 
 function team.isSearching()
-	return only_search
+	return getOption(3)
 end
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
 	setOptionName(2, "EVs training")
+	setOptionName(3, "Only search")
 	if isMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -31,12 +31,14 @@ function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm	
 	if isTeamUsable then
-		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() >= 5))
+		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() >= 2))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
-		if only_search and huntCondition then
-			return fatal("Found your desired pokemon!")
-		elseif only_search and not huntCondition then
+		if getOption(3) and huntCondition then
+			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+				return log("Try to catch "..getOpponentName())
+			end
+		elseif getOption(3) and not huntCondition then
 			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 		end
 		if opponentLevel >= myPokemonLvl and not huntCondition then
@@ -83,7 +85,7 @@ function team.isTrainingOver(maxLv)
 			count = count + 1
 		end
 	end
-	if count < size and not only_search then return false end
+	if count < size and not getOption(3) then return false end
 	return true
 end
 function team.getMaxLevelUsablePokemon()
