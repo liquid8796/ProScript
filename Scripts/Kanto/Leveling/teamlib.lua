@@ -1,4 +1,5 @@
 local listPokemon = require "listPokemon"
+local listEVs = require "listEVs"
 local mountList = require "mountList"
 local timeLeft = 0
 
@@ -6,14 +7,11 @@ team = {}
 local ran = 1
 local isMount = false
 
-function team.isSearching()
-	return getOption(3)
-end
-
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
 	setOptionName(2, "EVs training")
 	setOptionName(3, "Only search")
+	setOptionName(4, "Sorting mode")
 	if isMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -48,7 +46,7 @@ function team.onBattleFighting()
 			end
 		end	
 		if getOption(2) then
-			if getOpponentName() == "Paras" then
+			if team.isInList(listEVs, getOpponentName()) then
 				return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
 			else
 				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
@@ -67,6 +65,10 @@ function team.onBattleFighting()
 		--relog(1,"Restart for healing!")
 		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 	end
+end
+
+function team.isSearching()
+	return getOption(3)
 end
 function team.getLowestIndexOfUsablePokemon()
 	local size = getTeamSize()
@@ -117,6 +119,14 @@ function team.isInListPokemon(list, val)
     end
     return false
 end
+function team.isInList(list, val)
+	for key, value in ipairs(list) do		
+        if value == val then
+            return true
+        end
+    end
+	return false
+end
 function team.split(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
@@ -131,8 +141,10 @@ function team.delay(waitTime)
     repeat until os.time() > timer + waitTime
 end
 
-
 function team.onBattleMessage(message)
+	if stringContains(message, "This move is disabled") then
+		return sendUsablePokemon() or sendAnyPokemon()
+	end
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")

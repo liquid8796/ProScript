@@ -1,9 +1,9 @@
 
-name = "Leveling: Route 6 (near Vermilion)"
+name = "Leveling: Route 5 (near Cerulean)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
-Start anywhere between Vermilion City and Route 6.]]
+Start anywhere between Cerulean City and Route 5.]]
 
 local team = require "teamlib"
 local maxLv = 30
@@ -25,9 +25,9 @@ function onPathAction()
 	then
 		if getMapName() == "Pokecenter Vermilion" then
 			moveToCell(9,22)
-		elseif getMapName() == "Vermilion City" then
-			moveToCell(43,0)
-		elseif getMapName() == "Route 6" then
+		elseif getMapName() == "Cerulean City" then
+			moveToCell(17,50)
+		elseif getMapName() == "Route 5" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
@@ -35,10 +35,10 @@ function onPathAction()
 			talkToNpc("Prof. Antiban")
 		end
 	else
-		if getMapName() == "Route 6" then
-			moveToCell(23,61)
-		elseif getMapName() == "Vermilion City" then
-			moveToCell(27,21)
+		if getMapName() == "Route 5" then
+			moveToCell(28,0)
+		elseif getMapName() == "Cerulean City" then
+			moveToCell(26,30)
 		elseif getMapName() == "Pokecenter Vermilion" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
