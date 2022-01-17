@@ -7,8 +7,8 @@ local team = require "Libs/teamlib"
 local blacklist = require "blacklist"
 --local listPokemon = require "listPokemon"
 local catch_mode = false
-local isNeedPokemart = false
-local isAllowEvolve = false
+local isNeedPokemart = true
+local isAllowEvolve = true
 
 local Quest = {}
 

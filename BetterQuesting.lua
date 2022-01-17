@@ -15,7 +15,7 @@ local canBuyGreatballs = false
 local canBuyUltraballs = false
 
 local ran = 1
-local isNeedMount = false
+local isNeedMount = true
 
 function onStart()
 	setOptionName(1, "Relog on stop")
