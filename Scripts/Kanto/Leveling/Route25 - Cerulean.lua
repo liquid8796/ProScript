@@ -1,9 +1,9 @@
 
-name = "Leveling: Route 4 (near Cerulean)"
+name = "Leveling: Route 25 (near Cerulean)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
-Start anywhere between Cerulean City or Route 4.]]
+Start anywhere between Route 25 or Cerulean city.]]
 
 local team = require "teamlib"
 local maxLv = 25
@@ -23,11 +23,13 @@ function onPathAction()
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
-		if getMapName() == "Pokecenter Cerulean" then
+		if getMapName() == "Pokecenter Viridian" then
 			moveToCell(9,22)
-		elseif getMapName() == "Cerulean City" then
-			moveToCell(0,21)
-		elseif getMapName() == "Route 4" then
+		elseif getMapName() == "Viridian City" then
+			moveToCell(39,0)
+		elseif getMapName() == "Route 24" then
+			moveToCell(14,0)
+		elseif getMapName() == "Route 25" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			log("Quiz detected, talking to the prof.")
@@ -35,8 +37,10 @@ function onPathAction()
 			talkToNpc("Prof. Antiban")
 		end
 	else
-		if getMapName() == "Route 4" then
-			moveToCell(96,22)
+		if getMapName() == "Route 25" then
+			moveToCell(15,30)
+		elseif getMapName() == "Route 24" then
+			moveToCell(14,31)
 		elseif getMapName() == "Cerulean City" then
 			moveToCell(26,30)
 		elseif getMapName() == "Pokecenter Cerulean" then
@@ -68,4 +72,3 @@ end
 function onDialogMessage(message)
 	return team.onAntibanDialogMessage(message)
 end
-
