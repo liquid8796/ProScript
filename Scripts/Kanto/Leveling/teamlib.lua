@@ -5,7 +5,7 @@ local timeLeft = 0
 
 team = {}
 local ran = 1
-local isMount = false
+local isMount = true
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto relog")
@@ -47,24 +47,28 @@ function team.onBattleFighting()
 		end	
 		if getOption(2) then
 			if team.isInList(listEVs, getOpponentName()) then
-				return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
+				return team.doHunting(huntCondition)
 			else
 				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 			end
 		end
-		if huntCondition then		
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-				return
-			else
-				return attack() or sendUsablePokemon() or sendAnyPokemon() or run() 
-			end
-		else
-			return attack() or sendUsablePokemon() or sendAnyPokemon() or run()
-		end
+		team.doHunting(huntCondition)
 	else
 		--relog(1,"Restart for healing!")
 		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 	end
+end
+
+function team.doHunting(hunt_condition)
+	if hunt_condition then		
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+			return
+		else
+			return attack() or sendUsablePokemon() or sendAnyPokemon() or run() 
+		end
+	else
+		return attack() or useAnyMove() or sendUsablePokemon() or sendAnyPokemon() or run()
+	end	
 end
 
 function team.isSearching()
