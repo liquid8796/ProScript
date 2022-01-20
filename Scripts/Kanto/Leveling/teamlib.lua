@@ -131,13 +131,55 @@ function team.isInList(list, val)
     end
 	return false
 end
-function team.split(str, sep)
+function split(str, sep)
    local result = {}
    local regex = ("([^%s]+)"):format(sep)
    for each in str:gmatch(regex) do
       table.insert(result, each)
    end
    return result
+end
+function team.getFirstUsablePokemon()
+	for i=1, getTeamSize(), 1 do
+		if isPokemonUsable(i) then
+			return i
+		end
+	end
+	return 0
+end
+function team.getPokemonIdWithItem(ItemName)	
+	for i=1, getTeamSize(), 1 do
+		if getPokemonHeldItem(i) == ItemName then
+			return i
+		end
+	end
+	return 0
+end
+function team.useLeftovers()
+	ItemName = "Leftovers"
+	local PokemonNeedLeftovers = team.getFirstUsablePokemon()
+	local PokemonWithLeftovers = team.getPokemonIdWithItem(ItemName)
+	
+	if getTeamSize() > 0 then
+		if PokemonWithLeftovers > 0 then
+			if PokemonNeedLeftovers == PokemonWithLeftovers  then
+				return false -- now leftovers is on rightpokemon
+			else
+				takeItemFromPokemon(PokemonWithLeftovers)
+				return true
+			end
+		else
+
+			if hasItem(ItemName) and PokemonNeedLeftovers ~= 0 then
+				giveItemToPokemon(ItemName,PokemonNeedLeftovers)
+				return true
+			else
+				return false
+			end
+		end
+	else
+		return false
+	end
 end
 function team.delay(waitTime)
     timer = os.time()
@@ -168,30 +210,6 @@ antibanQuestions = {
 }
 
 function team.onAntibanDialogMessage(message)
-	--[[if getMapName() ~= "Prof. Antibans Classroom" then
-		return
-	end
-	if stringContains(message, "incorrect") then
-		fatal("Could not answer correctly, stopping the bot.")
-	end
-	for key, value in pairs(antibanQuestions) do
-		if stringContains(message, key) then
-			pushDialogAnswer(value)
-		end
-	end--]]
-	--[[if getMapName() ~= "Prof. Antibans Classroom" then
-		return
-	end--]]
-	--[[if stringContains(message, "take care of") then
-		timeLeft = timeLeft + 1
-		local n = 1
-		if timeLeft > 1 then 
-			timeLeft = 0
-			relog(5,"Restart 5s for amtiban!")
-		else
-			log("time remaining: "..(n-timeLeft))
-		end
-	end--]]
 	if getMapName() == "Prof. Antibans Classroom" then
 		if stringContains(message, "incorrect") then
 			log("Could not answer correctly, try another answer.")
@@ -206,5 +224,6 @@ function team.onAntibanDialogMessage(message)
 		end
 	end
 end
+
 
 return team
