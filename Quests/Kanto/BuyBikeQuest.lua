@@ -16,6 +16,19 @@ local description = 'Go to Cerulean City, get Ditto from Boxes, exchange it for 
 
 local BuyBikeQuest = Quest:new()
 
+local listBicycle =
+{
+	"Blue Bicycle",
+	"Red Bicycle"
+}
+function isHaveBicycle()
+	for k,v in ipairs(listBicycle) do
+		if hasItem(v) then
+			return true
+		end
+	end
+	return false
+end
 local dialogs = {
 	foundDitto = Dialog:new({
 		"Let me check that Ditto for your OT",
@@ -32,7 +45,7 @@ function BuyBikeQuest:new()
 end
 
 function BuyBikeQuest:isDoable()
-	if self:hasMap() and hasItem("Volcano Badge") and not hasItem("Earth Badge") and not hasItem("Bicycle") then
+	if self:hasMap() and hasItem("Volcano Badge") and not hasItem("Earth Badge") and not isHaveBicycle() then
 		return true
 	end
 	return false

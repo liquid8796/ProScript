@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Elite 4 - Kanto'
 local description = 'Exp in Victory Road (4 Zones)'
-local level = 90
+local level = 100
 
 local dialogs = {
 	leagueKantoNotDone = Dialog:new({ 
@@ -154,7 +154,8 @@ function ExpForElite4Kanto:VictoryRoadKanto3F()
 			return moveToCell(46, 13)
 		elseif not self:isTrainingOver() then
 			sys.debug("quest", "Going to level Pokemon until Level " .. self.level .. ".")
-			return moveToRectangle(40, 14, 48, 22)
+			--return moveToRectangle(40, 14, 48, 22)
+			return moveToNormalGround()
 		elseif not self:canBuyReviveItems() then
 			sys.debug("quest", "Going to farm $" .. self:reviveItemCost() - getMoney() .. " more money for Revives + Potions.")
 			return moveToRectangle(40, 14, 48, 22)

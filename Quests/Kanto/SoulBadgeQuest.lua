@@ -205,7 +205,8 @@ function SoulBadgeQuest:Route15()
 
 	elseif not self:isTrainingOver() then
 		sys.debug("quest", "Going to level Pokemon until Level " .. self.level .. ".")
-		return moveToRectangle(50, 19, 56, 22)
+		--return moveToRectangle(50, 19, 56, 22)
+		return moveToGrass()
 
 	elseif not self:canEnterSafari() and not hasItem("HM03 - Surf") then
 		sys.debug("quest", "Farming $" .. 5000 - getMoney() .. " more money, so we can enter the safari.")

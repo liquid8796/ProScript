@@ -6,8 +6,8 @@ local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
 --local listPokemon = require "listPokemon"
-local catch_mode = false
-local isNeedPokemart = false
+local catch_mode = true
+local isNeedPokemart = true
 local isAllowEvolve = true
 
 local Quest = {}
@@ -464,6 +464,7 @@ function Quest:checkDiscoverables()
 
 	local blacklistPokestopMaps = {
 		"Route 35",
+		"Route 21",
 	}
 
 	for i,v in ipairs(getDiscoverablePokestops()) do

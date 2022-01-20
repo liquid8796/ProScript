@@ -63,6 +63,9 @@ end
 
 function onPathAction()
 	if getMapName() == "Prof. Antibans Classroom" then
+		if useItem("Escape Rope") then
+			return
+		end
 		log("Quiz detected, talking to the prof.")
 		pushDialogAnswer(1)
 		talkToNpc("Prof. Antiban")
