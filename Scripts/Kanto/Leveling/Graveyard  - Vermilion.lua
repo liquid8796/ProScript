@@ -6,9 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Vermilion City and Vermilion City Graveyard.]]
 
 local team = require "teamlib"
-local start_flag = true
-local end_flag = true
-local maxLv = 50
+local maxLv = 100
 
 function onStart()
 	return team.onStart(maxLv)
@@ -31,18 +29,19 @@ function onPathAction()
 		if getMapName() == "Pokecenter Vermilion" then
 			moveToCell(9,22)
 		elseif getMapName() == "Vermilion City" then
-			if start_flag or (getPlayerX()==27 and getPlayerY()==21) then
-				start_flag = false
-				moveToCell(36,22)
-			elseif getPlayerX()==36 and getPlayerY()==22 then
+			local x = getPlayerX()
+			local y = getPlayerY()
+			if x<=27 and y>=21 then
+				moveToCell(36,21)
+			elseif x>27 and x<=36 and y>=21 then
 				moveToCell(36,19)
-			elseif getPlayerX()==36 and getPlayerY()==19 then
+			elseif x>27 and x<=36 and y>=19 and y<21 then
 				moveToCell(38,19)
-			elseif getPlayerX()==38 and getPlayerY()==19 then
+			elseif x>36 and x<=38 and y>=19 and y<21 then
 				moveToCell(38,11)
-			elseif getPlayerX()==38 and getPlayerY()==11 then
+			elseif x>36 and x<=38 and y>=11 and y<19 then
 				moveToCell(43,11)
-			elseif getPlayerX()==43 and getPlayerY()==11 then
+			elseif x>38 and x<=43 and y>=11 and y<19 then
 				moveToCell(43,0)
 			end
 		elseif getMapName() == "Route 6" then
@@ -50,12 +49,7 @@ function onPathAction()
 		elseif getMapName() == "Vermilion City Graveyard" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			if useItem("Escape Rope") then
-				return
-			end
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	else
 		if getMapName() == "Vermilion City Graveyard" then
@@ -63,25 +57,21 @@ function onPathAction()
 		elseif getMapName() == "Route 6" then
 			moveToCell(23,61)
 		elseif getMapName() == "Vermilion City" then
-			if end_flag or (getPlayerX()==23 and getPlayerY()==61) then
-				end_flag = false
+			local x = getPlayerX()
+			local y = getPlayerY()
+			if x>=43 and y<=1 then
 				moveToCell(43,11)
-			elseif getPlayerX()==43 and getPlayerY()==11 then
+			elseif x>=43 and y>1 and y<=11 then
 				moveToCell(38,11)
-			elseif getPlayerX()==38 and getPlayerY()==11 then
+			elseif x>=38 and x<43 and y>1 and y<=11 then
 				moveToCell(38,22)
-			elseif getPlayerX()==38 and getPlayerY()==22 then
+			elseif x<=38 and y>11 and y<=22 then
 				moveToCell(27,21)
 			end
 		elseif getMapName() == "Pokecenter Vermilion" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			if useItem("Escape Rope") then
-				return
-			end
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	end
 end

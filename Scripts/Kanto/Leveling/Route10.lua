@@ -5,58 +5,57 @@ description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere on Route 10.]]
 
-mode_catch = 0
-notfound = 0
+local team = require "teamlib"
+local maxLv = 100
 
-setOptionName(1, "Auto relog")
+function onStart()
+	return team.onStart(maxLv)
+end
 
 function onPathAction()
-	if isPokemonUsable(1) then
+	while not isTeamSortedByLevelAscending() and getOption(4) do
+		return sortTeamByLevelAscending()
+	end
+	if team.isTrainingOver(maxLv) and not team.isSearching() then
+		return logout("Complete training! Stop the bot.")
+	end
+	if team.useLeftovers() then
+		return
+    end
+	if getUsablePokemonCount() > 1 
+		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
+		or team.isSearching())
+	then
 		if getMapName() == "Pokecenter Route 10" then
 			moveToCell(9,22)
 		elseif getMapName() == "Route 10" then
-			moveToRectangle(13, 10, 20,11)
+			moveToGrass()
+		elseif getMapName() == "Prof. Antibans Classroom" then
+			return team.antibanclassroom()
 		end
 	else
 		if getMapName() == "Route 10" then
 			moveToCell(18,4)
 		elseif getMapName() == "Pokecenter Route 10" then
 			usePokecenter()
+		elseif getMapName() == "Prof. Antibans Classroom" then
+			return team.antibanclassroom()
 		end
 	end
 end
 
 function onBattleAction()
-	if mode_catch == 1 then
-		if isWildBattle() and (isOpponentShiny() or getOpponentName() == "Pineco") then
-			fatal("Your desire pokemon has been found!")
-		else
-			if getActivePokemonNumber() == 1 then
-				return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-			else
-				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-			end
-		end
-
-	else
-		if isWildBattle() and isOpponentShiny() then
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-				return
-			end
-		end
-		if getActivePokemonNumber() == 1 then
-			return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-		else
-			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-		end
-	end
+	return team.onBattleFighting()
 end
 
 function onStop()
+	return team.onStop()
+end
 
-	if getOption(1) then
-		return relog(5,"Restart bot after 5s")
-	else
-		return
-	end
+function onBattleMessage(message)
+	return team.onBattleMessage(message)
+end
+
+function onDialogMessage(message)
+	return team.onAntibanDialogMessage(message)
 end

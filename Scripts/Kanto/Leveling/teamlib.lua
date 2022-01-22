@@ -1,14 +1,14 @@
 local listPokemon = require "listPokemon"
-local listEVs = require "listEVs"
+local ev = require "listEVs"
 local mountList = require "mountList"
 local timeLeft = 0
 
 team = {}
 local ran = 1
-local isMount = true
+local isMount = false
 
 function team.onStart(maxLv)
-	setOptionName(1, "Auto relog")
+	setOptionName(1, "Auto restart")
 	setOptionName(2, "EVs training")
 	setOptionName(3, "Only search")
 	setOptionName(4, "Sorting mode")
@@ -46,7 +46,8 @@ function team.onBattleFighting()
 			end
 		end	
 		if getOption(2) then
-			if team.isInList(listEVs, getOpponentName()) then
+			local listEVs = ev.getListEVs("Atk")
+			if team.isInList(listEVs, getOpponentName()) or huntCondition then
 				return team.doHunting(huntCondition)
 			else
 				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
@@ -194,11 +195,25 @@ function team.onBattleMessage(message)
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		--team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		team.addListToFile(listPokemon, "C:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		--team.addListToFile(listPokemon, "C:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
-
+function team.onStop()
+	if getOption(1) then
+		return restart(5,"Restart bot after 5s")
+	else
+		return
+	end
+end
+function team.antibanclassroom()
+	if useItem("Escape Rope") then
+		return
+	end
+	log("Quiz detected, talking to the prof.")
+	pushDialogAnswer(1)
+	talkToNpc("Prof. Antiban")
+end
 antibanQuestions = {
 
 ["What type is Flygon?"] = "Dragon/Ground",
