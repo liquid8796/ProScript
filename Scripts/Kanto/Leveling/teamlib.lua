@@ -5,7 +5,7 @@ local timeLeft = 0
 
 team = {}
 local ran = 1
-local isMount = false
+local isMount = true
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto restart")
