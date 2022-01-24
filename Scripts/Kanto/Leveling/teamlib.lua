@@ -12,6 +12,7 @@ function team.onStart(maxLv)
 	setOptionName(2, "EVs training")
 	setOptionName(3, "Only search")
 	setOptionName(4, "Sorting mode")
+	setLoadingMapTimeout(1200)
 	if isMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -29,7 +30,7 @@ function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm	
 	if isTeamUsable then
-		local huntCondition = isWildBattle() and (isOpponentShiny() or (team.isInListPokemon(listPokemon, getOpponentName()) and getOpponentLevel() >= 2))
+		local huntCondition = isWildBattle() and (isOpponentShiny() or team.isInListPokemon(listPokemon, getOpponentName()))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
 		if getOption(3) and huntCondition then
@@ -240,5 +241,10 @@ function team.onAntibanDialogMessage(message)
 	end
 end
 
+function team.onSystemMessage(message)
+	if stringContains(message, "Bot still stuck") then
+		return relog(5,"Relog in 5s.")
+	end
+end
 
 return team
