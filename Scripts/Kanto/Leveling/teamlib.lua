@@ -12,6 +12,7 @@ function team.onStart(maxLv)
 	setOptionName(2, "EVs training")
 	setOptionName(3, "Only search")
 	setOptionName(4, "Sorting mode")
+	setOptionName(5, "Team combat")
 	setLoadingMapTimeout(1200)
 	if isMount then
 		for key, mount in ipairs(mountList) do
@@ -40,7 +41,7 @@ function team.onBattleFighting()
 		elseif getOption(3) and not huntCondition then
 			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 		end
-		if opponentLevel >= myPokemonLvl and not huntCondition then
+		if opponentLevel >= myPokemonLvl and getOption(5) and not huntCondition then
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
 			if requestedLevel > myPokemonLvl and requestedId ~= nil	then 
 				return sendPokemon(requestedId) 

@@ -19,6 +19,9 @@ local isNeedMount = true
 
 function onStart()
 	setOptionName(1, "Relog on stop")
+	setOptionName(2, "Pokemart")
+	setOptionName(3, "Catch mode")
+	setOptionName(4, "Evolve")
 	
 	if isNeedMount then
 		for key, mount in ipairs(mountList) do
