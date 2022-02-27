@@ -59,3 +59,7 @@ end
 function onDialogMessage(message)
 	return team.onAntibanDialogMessage(message)
 end
+
+function onSystemMessage(message)
+	return team.onSystemMessage(message)
+end

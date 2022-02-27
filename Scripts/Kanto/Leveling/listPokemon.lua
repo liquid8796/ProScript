@@ -1,5 +1,6 @@
 local listPokemon = 
 {
-['Doduo']=2,
+['Gloom']=0,
+['Mankey']=2,
 }
 return listPokemon

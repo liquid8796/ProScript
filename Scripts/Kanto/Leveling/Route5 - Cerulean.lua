@@ -6,7 +6,8 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Cerulean City and Route 5.]]
 
 local team = require "teamlib"
-local maxLv = 30
+local maxLv = 50
+local list_route_5 = ""
 
 function onStart()
 	return team.onStart(maxLv)

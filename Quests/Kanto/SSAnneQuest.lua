@@ -184,6 +184,8 @@ function SSAnneQuest:SSAnne1FKitchen()
 			end
 		else
 			sys.debug("quest", "Going to talk to Doctor Neumann.")
+			pushDialogAnswer(1)
+			pushDialogAnswer(1)	
 			return talkToNpcOnCell(5, 3)
 		end
 	end

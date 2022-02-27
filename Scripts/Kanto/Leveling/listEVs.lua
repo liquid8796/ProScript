@@ -8,11 +8,14 @@ local SpAtk =
 'Gastly',
 'Haunter',
 'Venomoth',
+'Budew',
 }
 local Atk = 
 {
 'Machop',
+'Mankey',
 'Nidoran M',
+'Teddiursa',
 }
 function ev.getListEVs(EVtype)
 	if EVtype == "SpAtk" then

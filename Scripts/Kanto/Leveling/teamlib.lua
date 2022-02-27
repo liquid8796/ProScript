@@ -6,14 +6,19 @@ local timeLeft = 0
 team = {}
 local ran = 1
 local isMount = true
+local isMoveBlocked = false
+local isCanSwitch = True
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto restart")
 	setOptionName(2, "EVs training")
 	setOptionName(3, "Only search")
 	setOptionName(4, "Sorting mode")
+	setOption(4, true)
 	setOptionName(5, "Team combat")
+	setOption(5, true)
 	setLoadingMapTimeout(1200)
+	closeAllChannel()
 	if isMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -34,6 +39,15 @@ function team.onBattleFighting()
 		local huntCondition = isWildBattle() and (isOpponentShiny() or team.isInListPokemon(listPokemon, getOpponentName()))
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
+		if isMoveBlocked then
+			return team.antiMoveBlocked()
+		end
+		if not isCanSwitch then
+			if sendUsablePokemon() or sendAnyPokemon() or useAnyMove() or run() then
+				isCanSwitch = true
+				return
+			end
+		end
 		if getOption(3) and huntCondition then
 			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 				return log("Try to catch "..getOpponentName())
@@ -77,6 +91,25 @@ end
 function team.isSearching()
 	return getOption(3)
 end
+
+function team.antiMoveBlocked()
+	if isWildBattle() then
+		if run() or sendAnyPokemon() or useAnyMove() then
+			isMoveBlocked = false
+			return log("Unstuck from battle")
+		else
+			log("Stuck in battle")
+		end
+	else
+		if sendUsablePokemon() or sendAnyPokemon() or useAnyMove() then
+			isMoveBlocked = false
+			return log("Unstuck from battle")
+		else
+			log("Stuck in battle")
+		end
+	end	
+end
+
 function team.getLowestIndexOfUsablePokemon()
 	local size = getTeamSize()
 	for i=1,size do
@@ -192,7 +225,10 @@ end
 
 function team.onBattleMessage(message)
 	if stringContains(message, "This move is disabled") then
-		return sendUsablePokemon() or sendAnyPokemon()
+		isMoveBlocked = true
+	end
+	if stringContains(message, "You can not switch this Pokemon") then
+		isCanSwitch = false
 	end
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
@@ -246,6 +282,14 @@ function team.onSystemMessage(message)
 	if stringContains(message, "Bot still stuck") then
 		return relog(5,"Relog in 5s.")
 	end
+end
+
+function closeAllChannel()
+	closeChannel("All")
+	closeChannel("Trade")
+	closeChannel("Battle")
+	closeChannel("Other")
+	closeChannel("Help")
 end
 
 return team

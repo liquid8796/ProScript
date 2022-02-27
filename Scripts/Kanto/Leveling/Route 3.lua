@@ -13,12 +13,15 @@ function onStart()
 end
 
 function onPathAction()
-	while not isTeamSortedByLevelAscending() do
+	while not isTeamSortedByLevelAscending() and getOption(4) do
 		return sortTeamByLevelAscending()
 	end
 	if team.isTrainingOver(maxLv) and not team.isSearching() then
 		return logout("Complete training! Stop the bot.")
 	end
+	if team.useLeftovers() then
+		return
+    end
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
@@ -28,9 +31,7 @@ function onPathAction()
 		elseif getMapName() == "Route 3" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	else
 		if getMapName() == "Route 3" then
@@ -38,9 +39,7 @@ function onPathAction()
 		elseif getMapName() == "Pokecenter Route 3" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	end
 end
@@ -50,11 +49,7 @@ function onBattleAction()
 end
 
 function onStop()
-	if getOption(1) then
-		return relog(2,"Restart bot after 2s")
-	else
-		return
-	end
+	return team.onStop()
 end
 
 function onBattleMessage(message)
@@ -63,4 +58,8 @@ end
 
 function onDialogMessage(message)
 	return team.onAntibanDialogMessage(message)
+end
+
+function onSystemMessage(message)
+	return team.onSystemMessage(message)
 end

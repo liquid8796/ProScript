@@ -6,35 +6,36 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 25 or Cerulean city.]]
 
 local team = require "teamlib"
-local maxLv = 25
+local maxLv = 50
 
 function onStart()
 	return team.onStart(maxLv)
 end
 
 function onPathAction()
-	while not isTeamSortedByLevelAscending() do
+	while not isTeamSortedByLevelAscending() and getOption(4) do
 		return sortTeamByLevelAscending()
 	end
 	if team.isTrainingOver(maxLv) and not team.isSearching() then
 		return logout("Complete training! Stop the bot.")
 	end
+	if team.useLeftovers() then
+		return
+    end
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
-		if getMapName() == "Pokecenter Viridian" then
+		if getMapName() == "Pokecenter Cerulean" then
 			moveToCell(9,22)
-		elseif getMapName() == "Viridian City" then
+		elseif getMapName() == "Cerulean City" then
 			moveToCell(39,0)
 		elseif getMapName() == "Route 24" then
 			moveToCell(14,0)
 		elseif getMapName() == "Route 25" then
 			moveToGrass()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	else
 		if getMapName() == "Route 25" then
@@ -46,9 +47,7 @@ function onPathAction()
 		elseif getMapName() == "Pokecenter Cerulean" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
-			log("Quiz detected, talking to the prof.")
-			pushDialogAnswer(1)
-			talkToNpc("Prof. Antiban")
+			return team.antibanclassroom()
 		end
 	end
 end
@@ -58,11 +57,7 @@ function onBattleAction()
 end
 
 function onStop()
-	if getOption(1) then
-		return relog(2,"Restart bot after 2s")
-	else
-		return
-	end
+	return team.onStop()
 end
 
 function onBattleMessage(message)
@@ -71,4 +66,8 @@ end
 
 function onDialogMessage(message)
 	return team.onAntibanDialogMessage(message)
+end
+
+function onSystemMessage(message)
+	return team.onSystemMessage(message)
 end

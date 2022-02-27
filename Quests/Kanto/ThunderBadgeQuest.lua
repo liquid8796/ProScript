@@ -8,7 +8,7 @@ local Dialog = require "Quests/Dialog"
 
 local name        = 'Thunder Badge Quest'
 local description = 'From Route 5 to Route 6'
-local level       = 31
+local level       = 25
 
 
 local dialogs = {
@@ -33,7 +33,7 @@ local ThunderBadgeQuest = Quest:new()
 function ThunderBadgeQuest:new()
 	o = Quest.new(ThunderBadgeQuest, name, description, level, dialogs)
 	o.pokemonId = 1
-	o.checkedForBestPokemon = false
+	o.checkedForBestPokemon = getOption(5)
 	o.puzzle = {}
 	o.firstSwitchFound     = false
 	o.firstSwitchActivated = false
@@ -130,7 +130,7 @@ function ThunderBadgeQuest:PokecenterVermilion()
 	if not (game.inRectangle(0, 19, 25, 22) or game.inRectangle(4, 16, 25, 18) or game.inRectangle(4, 11, 18, 15)) then
 		return moveToCell(21, 11)
 	else
-		if not self.checkedForBestPokemon then
+		if self.checkedForBestPokemon then
 			if isPCOpen() then
 				if isCurrentPCBoxRefreshed() then
 					if getCurrentPCBoxSize() ~= 0 then

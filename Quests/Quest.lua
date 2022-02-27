@@ -571,7 +571,8 @@ function Quest:checkForDeadPokemonBug()
 		if hasItem("Revive") then
 			useItemOnPokemon("Revive", 1)
 		else
-			fatal("All pokemon are dead, likely to a bug and you have no revives.")
+			--fatal("All pokemon are dead, likely to a bug and you have no revives.")
+			return usePokecenter()
 		end
 	end
 	return false

@@ -1,29 +1,23 @@
 
-name = "Leveling: Route 6 (near Vermilion)"
+name = "Leveling: Graveyard (near Vermilion)"
 author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
-Start anywhere between Vermilion City and Route 6.]]
+Start anywhere between Vermilion City and Vermilion City Graveyard.]]
 
 local team = require "teamlib"
-local maxLv = 50
-local list_1 = "27-53,37-45,36-31,13-30,13-23,26-23,26-21,34-21,34-25"
-local list_2 = "36-31,25-31,25-30,14-32,14-23,16-22,21-22,26-22,36-23,38-40,36-40"
-
+local maxLv = 42
+local list = 
+{
+[42]=15,
+[37]=12,
+}
 function onStart()
 	return team.onStart(maxLv)
 end
 
 function onPathAction()
-	while not isTeamSortedByLevelAscending() and getOption(4) do
-		return sortTeamByLevelAscending()
-	end
-	if team.isTrainingOver(maxLv) and not team.isSearching() then
-		return logout("Complete training! Stop the bot.")
-	end
-	if team.useLeftovers() then
-		return
-    end
+	relog(5, "test relog")
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
@@ -31,18 +25,45 @@ function onPathAction()
 		if getMapName() == "Pokecenter Vermilion" then
 			moveToCell(9,22)
 		elseif getMapName() == "Vermilion City" then
-			moveToCell(43,0)
+			local x = getPlayerX()
+			local y = getPlayerY()
+			if x<=27 and y>=21 then
+				moveToCell(36,21)
+			elseif x>27 and x<=36 and y>=21 then
+				moveToCell(36,19)
+			elseif x>27 and x<=36 and y>=19 and y<21 then
+				moveToCell(38,19)
+			elseif x>36 and x<=38 and y>=19 and y<21 then
+				moveToCell(38,11)
+			elseif x>36 and x<=38 and y>=11 and y<19 then
+				moveToCell(43,11)
+			elseif x>38 and x<=43 and y>=11 and y<19 then
+				moveToCell(43,0)
+			end
 		elseif getMapName() == "Route 6" then
-			--moveToGrass()
-			moveToListCell(list_1,list_2)
+			moveToCell(0,52)
+		elseif getMapName() == "Vermilion City Graveyard" then
+			moveToListCell(list)
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			return team.antibanclassroom()
 		end
 	else
-		if getMapName() == "Route 6" then
+		if getMapName() == "Vermilion City Graveyard" then
+			moveToCell(60,33)
+		elseif getMapName() == "Route 6" then
 			moveToCell(23,61)
 		elseif getMapName() == "Vermilion City" then
-			moveToCell(27,21)
+			local x = getPlayerX()
+			local y = getPlayerY()
+			if x>=43 and y<=1 then
+				moveToCell(43,11)
+			elseif x>=43 and y>1 and y<=11 then
+				moveToCell(38,11)
+			elseif x>=38 and x<43 and y>1 and y<=11 then
+				moveToCell(38,22)
+			elseif x<=38 and y>11 and y<=22 then
+				moveToCell(27,21)
+			end
 		elseif getMapName() == "Pokecenter Vermilion" then
 			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
@@ -52,7 +73,7 @@ function onPathAction()
 end
 
 function onBattleAction()
-	return team.onBattleFighting()
+	return run()
 end
 
 function onStop()

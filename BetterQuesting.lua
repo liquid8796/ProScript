@@ -22,7 +22,9 @@ function onStart()
 	setOptionName(2, "Pokemart")
 	setOptionName(3, "Catch mode")
 	setOptionName(4, "Evolve")
-	
+	setOptionName(5, "Check Best Pkm")
+	setLoadingMapTimeout(1200)
+	closeAllChannel()
 	if isNeedMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -110,6 +112,14 @@ end
 
 function onLearningMove(moveName, pokemonIndex)
 	questManager:learningMove(moveName, pokemonIndex)
+end
+
+function closeAllChannel()
+	closeChannel("All")
+	closeChannel("Trade")
+	closeChannel("Battle")
+	closeChannel("Other")
+	closeChannel("Help")
 end
 
 

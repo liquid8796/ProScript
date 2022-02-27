@@ -13,7 +13,7 @@ local RockTunnelQuest = Quest:new()
 
 function RockTunnelQuest:new()
 	local o = Quest.new(RockTunnelQuest, name, description, level)
-	o.checkedForBestPokemon = false
+	o.checkedForBestPokemon = getOption(5)
 
 	return o
 end
@@ -57,7 +57,7 @@ function RockTunnelQuest:Route10()
 end
 
 function RockTunnelQuest:PokecenterRoute10()
-	if not self.checkedForBestPokemon then
+	if self.checkedForBestPokemon then
 		if isPCOpen() then
 			if isCurrentPCBoxRefreshed() then
 				if getCurrentPCBoxSize() ~= 0 then
