@@ -52,9 +52,9 @@ function onBattleAction()
 	return team.onBattleFighting()
 end
 
-function onStop()
-	return team.onStop()
-end
+-- function onStop()
+-- 	return team.onStop()
+-- end
 
 function onBattleMessage(message)
 	return team.onBattleMessage(message)
