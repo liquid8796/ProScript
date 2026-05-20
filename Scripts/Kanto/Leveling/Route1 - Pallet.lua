@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 1 or PalletTown.]]
 
 local team = require "teamlib"
-local maxLv = 7
+local maxLv = 50
 
 function onStart()
 	return team.onStart(maxLv)
