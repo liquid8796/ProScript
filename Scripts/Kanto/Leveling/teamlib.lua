@@ -233,7 +233,7 @@ function team.onBattleMessage(message)
 	if stringContains(message, "caught") and not isOpponentShiny() then
 		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		team.addListToFile(listPokemon, "D:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "D:\\Project\\Lua\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 		--team.addListToFile(listPokemon, "C:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
 	end
 end
