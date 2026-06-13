@@ -9,6 +9,84 @@ local blacklist = require "blacklist"
 
 local Quest = {}
 
+-- Runtime-only Pokestop state. This is intentionally a cooldown, not a permanent blacklist.
+-- Some Pokestops stay visible after returning a passive NPC dialog such as a badge requirement,
+-- so checkDiscoverables() would otherwise call talkToNpcOnCell() forever on the same map cell.
+local POKESTOP_DIALOG_COOLDOWN_SECONDS = 600
+
+local pokestopCooldowns = {}
+local pendingPokestop = nil
+
+local function pokestopKey(mapName, x, y)
+	return tostring(mapName) .. ':' .. tostring(x) .. ':' .. tostring(y)
+end
+
+local function getNowSeconds()
+	return os.time()
+end
+
+local function prunePokestopCooldowns(now)
+	now = now or getNowSeconds()
+	for key, expiresAt in pairs(pokestopCooldowns) do
+		if expiresAt <= now then
+			pokestopCooldowns[key] = nil
+		end
+	end
+end
+
+local function getPokestopCooldownRemaining(mapName, x, y, now)
+	now = now or getNowSeconds()
+	local expiresAt = pokestopCooldowns[pokestopKey(mapName, x, y)]
+	if expiresAt == nil then
+		return 0
+	end
+	local remaining = expiresAt - now
+	if remaining <= 0 then
+		pokestopCooldowns[pokestopKey(mapName, x, y)] = nil
+		return 0
+	end
+	return remaining
+end
+
+local function setPokestopCooldown(mapName, x, y, seconds, reason)
+	local now = getNowSeconds()
+	pokestopCooldowns[pokestopKey(mapName, x, y)] = now + seconds
+	sys.debug('Pokestop Finder', 'Cooldown ' .. seconds .. 's for x(' .. tostring(x) .. '), y(' .. tostring(y) .. ') on ' .. tostring(mapName) .. ' after ' .. tostring(reason))
+end
+
+local function setPendingPokestop(mapName, x, y)
+	pendingPokestop = {
+		map = mapName,
+		x = x,
+		y = y,
+		startedAt = getNowSeconds(),
+	}
+end
+
+local function clearPendingPokestop()
+	pendingPokestop = nil
+end
+
+local function completePendingPokestopFromDialog(message)
+	if pendingPokestop == nil then
+		return false
+	end
+
+	local mapName = pendingPokestop.map
+	local x = pendingPokestop.x
+	local y = pendingPokestop.y
+
+	if getMapName() ~= mapName then
+		clearPendingPokestop()
+		return false
+	end
+
+	setPokestopCooldown(mapName, x, y, POKESTOP_DIALOG_COOLDOWN_SECONDS, 'dialog: ' .. tostring(message))
+	clearPendingPokestop()
+	return true
+end
+
+
 -- the base class of all quests
 function Quest:new(name, description, level, dialogs)
 	local o = {}
@@ -464,11 +542,17 @@ function Quest:checkDiscoverables()
 		"Route 21",
 	}
 
+	local now = getNowSeconds()
+	local mapName = getMapName()
+	prunePokestopCooldowns(now)
+
 	for i,v in ipairs(getDiscoverablePokestops()) do
-		if not sys.tableHasValue(blacklistPokestopMaps, getMapName()) then
-			if not (getMapName() == "Vermilion City" and (v.x == 18  and v.y == 22)) then -- manual fix for an event NPC
-				if isNpcOnCell(v.x, v.y) then
+		if not sys.tableHasValue(blacklistPokestopMaps, mapName) then
+			if not (mapName == "Vermilion City" and (v.x == 18  and v.y == 22)) then -- manual fix for an event NPC
+				local cooldownRemaining = getPokestopCooldownRemaining(mapName, v.x, v.y, now)
+				if cooldownRemaining <= 0 and isNpcOnCell(v.x, v.y) then
 					if talkToNpcOnCell(v.x, v.y) then
+						setPendingPokestop(mapName, v.x, v.y)
 						sys.debug("Pokestop Finder", "Going to Pokestop: x(" .. v.x .. "), " .. "y(" .. v.y .. ")")
 						return true
 					end
@@ -720,6 +804,12 @@ function Quest:battle()
 end
 
 function Quest:dialog(message)
+	-- If the last discoverable action was a Pokestop, any NPC dialog means that
+	-- interaction completed from the script's point of view. Put the map/cell on a
+	-- temporary cooldown so a passive/unavailable Pokestop is not clicked again
+	-- every path tick. This is not a blacklist; it expires automatically.
+	completePendingPokestopFromDialog(message)
+
 	if self.dialogs == nil then
 		return false
 	end
