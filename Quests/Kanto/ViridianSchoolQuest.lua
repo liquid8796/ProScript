@@ -16,7 +16,10 @@ local level = 8
 local dialogs = {
 	jacksonDefeated = Dialog:new({
 		"You will not take my spot!",
-		"Sorry, the young boy there doesn't want to give his spot, I'm truly sorry..."
+		"Sorry, the young boy there doesn't want to give his spot, I'm truly sorry...",
+		"You actually want to steal my spot",
+		"I worked so hard for this spot",
+		"Get your Pokemon and fight like a man"
 	})
 }
 
@@ -120,6 +123,7 @@ function ViridianSchoolQuest:ViridianCitySchool()
 		return moveToCell(12, 3)
 	end
 end
+
 
 function ViridianSchoolQuest:ViridianCitySchoolUnderground()
 	if self.dialogs.jacksonDefeated.state or not self:isTrainingOver() then
