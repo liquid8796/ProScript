@@ -669,7 +669,9 @@ function Quest:path()
 	end
 	if self:checkForDeadPokemonBug() then   return true end
 	if self:evolvePokemon() then 			return true end
-	if self:sortInMemory() then 			return true end
+	if not (isGameScriptActive ~= nil and isGameScriptActive()) then
+		if self:sortInMemory() then 		return true end
+	end
 	if self:leftovers() then 				return true end
 	if self:checkNPCInteractions() then		return true end
 	if self:checkDiscoverables() then		return true	end
