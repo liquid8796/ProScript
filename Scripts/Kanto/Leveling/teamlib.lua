@@ -18,7 +18,7 @@ function team.onStart(maxLv)
 	setOptionName(5, "Team combat")
 	setOption(5, true)
 	setLoadingMapTimeout(1200)
-	closeAllChannel()
+	--closeAllChannel()
 	if isMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
@@ -29,7 +29,8 @@ function team.onStart(maxLv)
 	end
 	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
-	return disablePrivateMessage()
+	-- return disablePrivateMessage()
+	return
 end
 
 function team.onBattleFighting()
