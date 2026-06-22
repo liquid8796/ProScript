@@ -18,7 +18,7 @@ HOENN_STARTER_ID = nil          -- not implemented yet | script will choose star
 
 
 -- ------Bot related options------
-DISABLE_PM = true               -- true: private messaging will be disabled, false: no changes will be done
+DISABLE_PM = false               -- true: private messaging will be disabled, false: no changes will be done
 RELOG_TIME = 30                  -- bot will relog every RELOG_TIME minutes
 
 DEBUG = true                   -- printing debug comments
