@@ -7,7 +7,7 @@ team = {}
 local ran = 1
 local isMount = true
 local isMoveBlocked = false
-local isCanSwitch = True
+local isCanSwitch = true
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto restart")
@@ -232,10 +232,10 @@ function team.onBattleMessage(message)
 		isCanSwitch = false
 	end
 	if stringContains(message, "caught") and not isOpponentShiny() then
-		listPokemon[getOpponentName()] = listPokemon[getOpponentName()] + 1
+		local pokemonName = getOpponentName()
+		listPokemon[pokemonName] = (listPokemon[pokemonName] or 0) + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		team.addListToFile(listPokemon, "D:\\Project\\Lua\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
-		--team.addListToFile(listPokemon, "C:\\ProScript\\Scripts\\Kanto\\Leveling\\listPokemon.lua")
+		team.addListToFile(listPokemon, "listPokemon.lua")
 	end
 end
 function team.onStop()
