@@ -2,6 +2,9 @@ local listPokemon = require "listPokemon"
 local ev = require "listEVs"
 local mountList = require "mountList"
 local timeLeft = 0
+local listPokemonSavePath = "Scripts/Kanto/Leveling/listPokemon.lua"
+local huntCatchHpThreshold = 50
+local huntWeakenMaxLevelGap = 4
 
 team = {}
 local ran = 1
@@ -50,9 +53,7 @@ function team.onBattleFighting()
 			end
 		end
 		if getOption(3) and huntCondition then
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-				return log("Try to catch "..getOpponentName())
-			end
+			return team.doOnlySearchHunting()
 		elseif getOption(3) and not huntCondition then
 			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 		end
@@ -75,6 +76,101 @@ function team.onBattleFighting()
 		--relog(1,"Restart for healing!")
 		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 	end
+end
+
+function team.getOpponentHealthPercentSafe()
+	if getOpponentHealthPercent ~= nil then
+		local healthPercent = tonumber(getOpponentHealthPercent())
+		if healthPercent ~= nil then
+			return healthPercent
+		end
+	end
+
+	if getOpponentHealth ~= nil and getOpponentMaxHealth ~= nil then
+		local health = tonumber(getOpponentHealth())
+		local maxHealth = tonumber(getOpponentMaxHealth())
+		if health ~= nil and maxHealth ~= nil and maxHealth > 0 then
+			return (health * 100) / maxHealth
+		end
+	end
+
+	return nil
+end
+
+function team.shouldWeakenBeforeCatch()
+	local healthPercent = team.getOpponentHealthPercentSafe()
+	return healthPercent ~= nil and healthPercent >= huntCatchHpThreshold
+end
+
+function team.isPokemonLevelSafeToWeaken(pokemonId, opponentLevel)
+	local pokemonLevel = tonumber(getPokemonLevel(pokemonId))
+	opponentLevel = tonumber(opponentLevel)
+	if pokemonLevel == nil or opponentLevel == nil then
+		return false
+	end
+	local levelGap = pokemonLevel - opponentLevel
+	return levelGap > 0 and levelGap <= huntWeakenMaxLevelGap
+end
+
+function team.findSafeWeakenPokemon(opponentLevel)
+	opponentLevel = tonumber(opponentLevel)
+	if opponentLevel == nil then
+		return nil, nil
+	end
+
+	local bestId = nil
+	local bestLevel = nil
+	for pokemonId=1, getTeamSize(), 1 do
+		if pokemonId ~= getActivePokemonNumber()
+			and isPokemonUsable(pokemonId)
+			and team.isPokemonLevelSafeToWeaken(pokemonId, opponentLevel) then
+			local pokemonLevel = tonumber(getPokemonLevel(pokemonId))
+			if bestLevel == nil or pokemonLevel < bestLevel then
+				bestId = pokemonId
+				bestLevel = pokemonLevel
+			end
+		end
+	end
+	return bestId, bestLevel
+end
+
+function team.throwCatchBall(opponentName)
+	if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+		return log("Try to catch "..opponentName)
+	end
+
+	log("No usable Pokeball found for hunted Pokemon "..opponentName..".")
+	return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
+end
+
+function team.doOnlySearchHunting()
+	local opponentName = getOpponentName()
+	local opponentLevel = tonumber(getOpponentLevel())
+	local activePokemonId = getActivePokemonNumber()
+	local activePokemonLevel = tonumber(getPokemonLevel(activePokemonId))
+	local healthPercent = team.getOpponentHealthPercentSafe()
+
+	if not team.shouldWeakenBeforeCatch() then
+		return team.throwCatchBall(opponentName)
+	end
+
+	if team.isPokemonLevelSafeToWeaken(activePokemonId, opponentLevel) then
+		if healthPercent ~= nil then
+			log("Weakening "..opponentName.." before catch (HP "..math.floor(healthPercent).."%, active Lv "..activePokemonLevel..", opponent Lv "..opponentLevel..").")
+		else
+			log("Weakening "..opponentName.." before catch (active Lv "..activePokemonLevel..", opponent Lv "..opponentLevel..").")
+		end
+		return attack() or useAnyMove()
+	end
+
+	local safePokemonId, safePokemonLevel = team.findSafeWeakenPokemon(opponentLevel)
+	if safePokemonId ~= nil then
+		log("Switching to Pokemon #"..safePokemonId.." Lv "..safePokemonLevel.." to weaken "..opponentName.." safely before catch.")
+		return sendPokemon(safePokemonId)
+	end
+
+	log("No usable team Pokemon has level greater than "..opponentName.." by 1-"..huntWeakenMaxLevelGap.." levels. Throwing ball immediately.")
+	return team.throwCatchBall(opponentName)
 end
 
 function team.doHunting(hunt_condition)
@@ -235,7 +331,7 @@ function team.onBattleMessage(message)
 		local pokemonName = getOpponentName()
 		listPokemon[pokemonName] = (listPokemon[pokemonName] or 0) + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
-		team.addListToFile(listPokemon, "listPokemon.lua")
+		team.addListToFile(listPokemon, listPokemonSavePath)
 	end
 end
 function team.onStop()
