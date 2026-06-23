@@ -217,6 +217,10 @@ function team.getLowestIndexOfUsablePokemon()
 	return size
 end
 function team.isTrainingOver(maxLv)
+	if team.isSearching() then
+		return false
+	end
+
 	local count = 0
 	local size = getTeamSize()
 	for i=1,size do
@@ -224,8 +228,7 @@ function team.isTrainingOver(maxLv)
 			count = count + 1
 		end
 	end
-	if count < size and not getOption(3) then return false end
-	return true
+	return count >= size
 end
 function team.getMaxLevelUsablePokemon()
 	local currentId
