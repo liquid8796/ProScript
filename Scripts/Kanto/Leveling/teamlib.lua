@@ -3,7 +3,7 @@ local ev = require "listEVs"
 local mountList = require "mountList"
 local timeLeft = 0
 local listPokemonSavePath = "Scripts/Kanto/Leveling/listPokemon.lua"
-local huntCatchHpThreshold = 60
+local huntCatchHpThreshold = 50
 local huntWeakenMaxLevelGap = 4
 
 team = {}
@@ -20,7 +20,6 @@ function team.onStart(maxLv)
 	setOption(4, true)
 	setOptionName(5, "Team combat")
 	setOption(5, true)
-	setLoadingMapTimeout(1200)
 	--closeAllChannel()
 	if isMount then
 		for key, mount in ipairs(mountList) do
