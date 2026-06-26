@@ -3,7 +3,7 @@ local ev = require "listEVs"
 local mountList = require "mountList"
 local timeLeft = 0
 local listPokemonSavePath = "Scripts/Kanto/Leveling/listPokemon.lua"
-local huntCatchHpThreshold = 50
+local huntCatchHpThreshold = 70
 local huntWeakenMaxLevelGap = 4
 
 team = {}
