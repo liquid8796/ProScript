@@ -18,7 +18,7 @@ function onPathAction()
 		return sortTeamByLevelAscending()
 	end
 	if team.isTrainingOver(maxLv) and not team.isSearching() then
-		return logout("Complete training! Stop the bot.")
+		return fatal("Complete training! Stop the bot.")
 	end
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
