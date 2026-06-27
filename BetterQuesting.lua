@@ -23,8 +23,7 @@ function onStart()
 	setOptionName(3, "Catch mode")
 	setOptionName(4, "Evolve")
 	setOptionName(5, "Check Best Pkm")
-	setLoadingMapTimeout(1200)
-	closeAllChannel()
+	-- closeAllChannel()
 	if isNeedMount then
 		for key, mount in ipairs(mountList) do
 			if hasItem(mount) then
