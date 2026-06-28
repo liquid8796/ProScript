@@ -32,19 +32,21 @@ function onPathAction()
 		or team.isSearching())
 	then
 		if getMapName() == "Pokecenter Viridian" then
-			moveToMap("Viridian City")
+			moveToCell(9,22)
 		elseif getMapName() == "Viridian City" then
-			moveToMap("Route 2")
+			moveToCell(39,0)
 		elseif getMapName() == "Route 2" then
 			moveToGrass()
 		end
 	else
 		if getMapName() == "Route 2" then
-			moveToMap("Viridian City")
+			moveToCell(9,130)
 		elseif getMapName() == "Viridian City" then
-			moveToMap("Pokecenter Viridian")
+			moveToCell(44,43)
 		elseif getMapName() == "Pokecenter Viridian" then
 			usePokecenter()
+		elseif getMapName() == "Prof. Antibans Classroom" then
+			return team.antibanclassroom()
 		end
 	end
 end
