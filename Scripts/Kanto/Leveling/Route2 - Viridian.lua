@@ -26,8 +26,11 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	
-	if isPokemonUsable(1) and getPokemonHealthPercent(1) > 30 then
+
+	if getUsablePokemonCount() > 1
+		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
+		or team.isSearching())
+	then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToMap("Viridian City")
 		elseif getMapName() == "Viridian City" then
