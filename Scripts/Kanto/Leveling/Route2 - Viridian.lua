@@ -4,16 +4,19 @@
 -- as published by Sam Hocevar. See the LICENSE file for more details.
 
 name = "Leveling: Route 2 (near Viridian)"
-author = "Silv3r"
+author = "Liquid"
 description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Viridian City and Route 2.]]
 
-mode_catch = 1
-setOptionName(1, "Auto relog")
+local team = require "teamlib"
+local maxLv = 25
+
+function onStart()
+	return team.onStart(maxLv)
+end
 
 function onPathAction()
-setMount("Xmas Dragonite Mount")
 	if isPokemonUsable(1) and getPokemonHealthPercent(1) > 30 then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToMap("Viridian City")
