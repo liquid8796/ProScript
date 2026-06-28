@@ -134,7 +134,7 @@ function team.findSafeWeakenPokemon(opponentLevel)
 end
 
 function team.throwCatchBall(opponentName)
-	if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
+	if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokéball") then
 		return log("Try to catch "..opponentName)
 	end
 
