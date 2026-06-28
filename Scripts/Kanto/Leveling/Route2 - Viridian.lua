@@ -37,14 +37,21 @@ function onPathAction()
 end
 
 function onBattleAction()
-	if isWildBattle() and isOpponentShiny() then
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			return
-		end
-	end
-	if getActivePokemonNumber() == 1 then
-		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-	else
-		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
-	end
+	return team.onBattleFighting()
+end
+
+-- function onStop()
+-- 	return team.onStop()
+-- end
+
+function onBattleMessage(message)
+	return team.onBattleMessage(message)
+end
+
+function onDialogMessage(message)
+	return team.onAntibanDialogMessage(message)
+end
+
+function onSystemMessage(message)
+	return team.onSystemMessage(message)
 end
