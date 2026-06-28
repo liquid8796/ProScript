@@ -17,6 +17,16 @@ function onStart()
 end
 
 function onPathAction()
+	while not isTeamSortedByLevelAscending() and getOption(4) do
+		return sortTeamByLevelAscending()
+	end
+	if team.isTrainingOver(maxLv) and not team.isSearching() then
+		return fatal("Complete training! Stop the bot.")
+	end
+	if team.useLeftovers() then
+		return
+    end
+	
 	if isPokemonUsable(1) and getPokemonHealthPercent(1) > 30 then
 		if getMapName() == "Pokecenter Viridian" then
 			moveToMap("Viridian City")
