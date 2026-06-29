@@ -21,6 +21,8 @@ local team = require "../../Libs/teamlib"
 
 Kanto training scripts no longer configure mounts during `onStart()` from city, Pokecenter, or travel-only maps. Shared Kanto scripts call `team.setMountForTrainingMap()` from `onPathAction()`, and the helper only calls `setMount(...)` when the current map is a known training map such as Route/Viridian Forest/Rock Tunnel/Seafoam/Victory Road. Intermediate maps and city maps are skipped.
 
+`team.setMountForTrainingMap()` returns `true` only when it actually sends `disMount()` and the current tick should wait. Plain `setMount(...)` only changes the configured auto-mount and returns `false`, so the script continues to execute its normal movement/training action in the same tick.
+
 
 ## MoonSharp require path note
 

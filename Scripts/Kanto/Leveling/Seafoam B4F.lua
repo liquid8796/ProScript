@@ -57,7 +57,9 @@ function setMountForSeafoamTrainingMap()
 			setMount(mountName)
 			mountConfiguredForSeafoam = true
 			log("Mount configured for training map Seafoam B4F: " .. mountName .. ".")
-			return true
+			-- setMount only updates the auto-mount configuration. It is not a Lua action
+			-- by itself, so keep running the normal training path logic this tick.
+			return false
 		end
 	end
 	return false

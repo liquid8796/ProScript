@@ -94,7 +94,10 @@ function team.setMountForTrainingMap(trainingMaps)
 			setMount(mount)
 			mountedTrainingMapName = mapName
 			log("Mount configured for training map "..mapName..": "..mount)
-			return true
+			-- setMount only updates the auto-mount configuration. It is not a Lua action
+			-- by itself, so the caller must continue its path logic in the same tick.
+			-- Return true only when disMount() was actually sent and movement should wait.
+			return false
 		end
 	end
 	return false
