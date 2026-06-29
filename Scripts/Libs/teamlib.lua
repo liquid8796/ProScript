@@ -1,8 +1,8 @@
-local listPokemon = require "listPokemon"
-local ev = require "listEVs"
-local mountList = require "mountList"
+local listPokemon = require "Scripts/Libs/listPokemon"
+local ev = require "Scripts/Libs/listEVs"
+local mountList = require "Scripts/Libs/mountList"
 local timeLeft = 0
-local listPokemonSavePath = "Scripts/Kanto/Leveling/listPokemon.lua"
+local listPokemonSavePath = "Scripts/Libs/listPokemon.lua"
 local huntCatchHpThreshold = 70
 local huntWeakenMaxLevelGap = 4
 

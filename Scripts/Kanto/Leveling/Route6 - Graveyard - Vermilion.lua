@@ -5,7 +5,7 @@ description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Vermilion City and Route 6.]]
 
-local team = require "teamlib"
+local team = require "Scripts/Libs/teamlib"
 local maxLv = 100
 local listVermilion_1 = "36-22,36-19,38-19,38-11,43-11,43-0"
 local listVermilion_2 = "43-11,38-11,38-22,27-21"
