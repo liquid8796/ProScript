@@ -26,6 +26,18 @@ rectangles = {
 selectedRectangle = 0
 
 local mountConfiguredForSeafoam = false
+local seafoamGroundMountMode = nil
+
+function clearConfiguredSeafoamGroundMount(logMessage)
+	if seafoamGroundMountMode ~= "disabled" then
+		setMount("")
+		seafoamGroundMountMode = "disabled"
+		mountConfiguredForSeafoam = false
+		if logMessage ~= nil and logMessage ~= "" then
+			log(logMessage)
+		end
+	end
+end
 
 function onStart()
 	selectRandomRectangle()
@@ -42,27 +54,13 @@ function disMountGroundIfNeeded()
 end
 
 function setMountForSeafoamTrainingMap()
-	if getMapName() ~= "Seafoam B4F" then
-		mountConfiguredForSeafoam = false
-		setMount("")
+	if getMapName() == "Seafoam B4F" then
+		clearConfiguredSeafoamGroundMount("Ground mount disabled on training map Seafoam B4F.")
 		return disMountGroundIfNeeded()
 	end
 
-	if mountConfiguredForSeafoam then
-		return false
-	end
-
-	for _, mountName in ipairs(mounts) do
-		if hasItem(mountName) then
-			setMount(mountName)
-			mountConfiguredForSeafoam = true
-			log("Mount configured for training map Seafoam B4F: " .. mountName .. ".")
-			-- setMount only updates the auto-mount configuration. It is not a Lua action
-			-- by itself, so keep running the normal training path logic this tick.
-			return false
-		end
-	end
-	return false
+	clearConfiguredSeafoamGroundMount(nil)
+	return disMountGroundIfNeeded()
 end
 
 function onPathAction()

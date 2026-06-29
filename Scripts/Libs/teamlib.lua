@@ -41,6 +41,18 @@ local kantoTrainingMaps = {
 }
 
 local mountedTrainingMapName = nil
+local groundMountMode = nil
+
+local function clearConfiguredGroundMount(logMessage)
+	if groundMountMode ~= "disabled" then
+		setMount("")
+		groundMountMode = "disabled"
+		mountedTrainingMapName = nil
+		if logMessage ~= nil and logMessage ~= "" then
+			log(logMessage)
+		end
+	end
+end
 
 function team.onStart(maxLv)
 	setOptionName(1, "Auto restart")
@@ -74,33 +86,14 @@ end
 function team.setMountForTrainingMap(trainingMaps)
 	local mapName = getMapName()
 	local maps = trainingMaps or kantoTrainingMaps
-	if maps[mapName] ~= true then
-		mountedTrainingMapName = nil
-		setMount("")
+
+	if maps[mapName] == true then
+		clearConfiguredGroundMount("Ground mount disabled on training map "..mapName..".")
 		return team.disMountGroundIfNeeded()
 	end
 
-	if not isMount then
-		setMount("")
-		return team.disMountGroundIfNeeded()
-	end
-
-	if mountedTrainingMapName == mapName then
-		return false
-	end
-
-	for key, mount in ipairs(mountList) do
-		if hasItem(mount) then
-			setMount(mount)
-			mountedTrainingMapName = mapName
-			log("Mount configured for training map "..mapName..": "..mount)
-			-- setMount only updates the auto-mount configuration. It is not a Lua action
-			-- by itself, so the caller must continue its path logic in the same tick.
-			-- Return true only when disMount() was actually sent and movement should wait.
-			return false
-		end
-	end
-	return false
+	clearConfiguredGroundMount(nil)
+	return team.disMountGroundIfNeeded()
 end
 
 function team.onBattleFighting()
