@@ -61,18 +61,34 @@ function team.isKantoTrainingMap(mapName)
 	return kantoTrainingMaps[mapName] == true
 end
 
-function team.setMountForTrainingMap(trainingMaps)
-	if not isMount then
-		return false
+function team.disMountGroundIfNeeded()
+	if isMounted ~= nil and isMounted() and (isSurfing == nil or not isSurfing()) then
+		if disMount ~= nil then
+			return disMount()
+		end
+		log("Ground mount is active but disMount() API is not available in this tool version.")
 	end
+	return false
+end
+
+function team.setMountForTrainingMap(trainingMaps)
 	local mapName = getMapName()
 	local maps = trainingMaps or kantoTrainingMaps
 	if maps[mapName] ~= true then
-		return false
+		mountedTrainingMapName = nil
+		setMount("")
+		return team.disMountGroundIfNeeded()
 	end
+
+	if not isMount then
+		setMount("")
+		return team.disMountGroundIfNeeded()
+	end
+
 	if mountedTrainingMapName == mapName then
 		return false
 	end
+
 	for key, mount in ipairs(mountList) do
 		if hasItem(mount) then
 			setMount(mount)

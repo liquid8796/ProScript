@@ -31,10 +31,27 @@ function onStart()
 	selectRandomRectangle()
 end
 
+function disMountGroundIfNeeded()
+	if isMounted ~= nil and isMounted() and (isSurfing == nil or not isSurfing()) then
+		if disMount ~= nil then
+			return disMount()
+		end
+		log("Ground mount is active but disMount() API is not available in this tool version.")
+	end
+	return false
+end
+
 function setMountForSeafoamTrainingMap()
-	if mountConfiguredForSeafoam or getMapName() ~= "Seafoam B4F" then
+	if getMapName() ~= "Seafoam B4F" then
+		mountConfiguredForSeafoam = false
+		setMount("")
+		return disMountGroundIfNeeded()
+	end
+
+	if mountConfiguredForSeafoam then
 		return false
 	end
+
 	for _, mountName in ipairs(mounts) do
 		if hasItem(mountName) then
 			setMount(mountName)
@@ -47,7 +64,9 @@ function setMountForSeafoamTrainingMap()
 end
 
 function onPathAction()
-	setMountForSeafoamTrainingMap()
+	if setMountForSeafoamTrainingMap() then
+		return
+	end
 	if placeTrainingPokemonOnTop() then
 		return
 	end
