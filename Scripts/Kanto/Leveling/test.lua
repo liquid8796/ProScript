@@ -17,6 +17,7 @@ function onStart()
 end
 
 function onPathAction()
+	team.setMountForTrainingMap()
 	relog(5, "test relog")
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv

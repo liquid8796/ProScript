@@ -25,17 +25,29 @@ rectangles = {
 
 selectedRectangle = 0
 
+local mountConfiguredForSeafoam = false
+
 function onStart()
 	selectRandomRectangle()
+end
+
+function setMountForSeafoamTrainingMap()
+	if mountConfiguredForSeafoam or getMapName() ~= "Seafoam B4F" then
+		return false
+	end
 	for _, mountName in ipairs(mounts) do
 		if hasItem(mountName) then
 			setMount(mountName)
-			break
+			mountConfiguredForSeafoam = true
+			log("Mount configured for training map Seafoam B4F: " .. mountName .. ".")
+			return true
 		end
 	end
+	return false
 end
 
 function onPathAction()
+	setMountForSeafoamTrainingMap()
 	if placeTrainingPokemonOnTop() then
 		return
 	end

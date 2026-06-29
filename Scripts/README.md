@@ -16,3 +16,7 @@ Kanto scripts should now import the shared team helper with:
 ```lua
 local team = require "Scripts/Libs/teamlib"
 ```
+
+## Kanto mount behavior
+
+Kanto training scripts no longer configure mounts during `onStart()` from city, Pokecenter, or travel-only maps. Shared Kanto scripts call `team.setMountForTrainingMap()` from `onPathAction()`, and the helper only calls `setMount(...)` when the current map is a known training map such as Route/Viridian Forest/Rock Tunnel/Seafoam/Victory Road. Intermediate maps and city maps are skipped.

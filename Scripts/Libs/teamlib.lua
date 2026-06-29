@@ -12,6 +12,36 @@ local isMount = true
 local isMoveBlocked = false
 local isCanSwitch = true
 
+local kantoTrainingMaps = {
+	["Cinnabar mansion 1"] = true,
+	["Mt. Moon 1F"] = true,
+	["Mt. Moon B1F"] = true,
+	["Rock Tunnel 1"] = true,
+	["Rock Tunnel 2"] = true,
+	["Route 1"] = true,
+	["Route 2"] = true,
+	["Route 3"] = true,
+	["Route 4"] = true,
+	["Route 5"] = true,
+	["Route 6"] = true,
+	["Route 7"] = true,
+	["Route 8"] = true,
+	["Route 9"] = true,
+	["Route 10"] = true,
+	["Route 11"] = true,
+	["Route 18"] = true,
+	["Route 20"] = true,
+	["Route 21"] = true,
+	["Route 22"] = true,
+	["Route 25"] = true,
+	["Seafoam B4F"] = true,
+	["Vermilion City Graveyard"] = true,
+	["Victory Road Kanto 3F"] = true,
+	["Viridian Forest"] = true,
+}
+
+local mountedTrainingMapName = nil
+
 function team.onStart(maxLv)
 	setOptionName(1, "Auto restart")
 	setOptionName(2, "EVs training")
@@ -21,18 +51,37 @@ function team.onStart(maxLv)
 	setOptionName(5, "Team combat")
 	setOption(5, true)
 	--closeAllChannel()
-	if isMount then
-		for key, mount in ipairs(mountList) do
-			if hasItem(mount) then
-				setMount(mount)
-				break
-			end
-		end
-	end
 	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
 	-- return disablePrivateMessage()
 	return
+end
+
+function team.isKantoTrainingMap(mapName)
+	return kantoTrainingMaps[mapName] == true
+end
+
+function team.setMountForTrainingMap(trainingMaps)
+	if not isMount then
+		return false
+	end
+	local mapName = getMapName()
+	local maps = trainingMaps or kantoTrainingMaps
+	if maps[mapName] ~= true then
+		return false
+	end
+	if mountedTrainingMapName == mapName then
+		return false
+	end
+	for key, mount in ipairs(mountList) do
+		if hasItem(mount) then
+			setMount(mount)
+			mountedTrainingMapName = mapName
+			log("Mount configured for training map "..mapName..": "..mount)
+			return true
+		end
+	end
+	return false
 end
 
 function team.onBattleFighting()

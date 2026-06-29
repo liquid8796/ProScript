@@ -19,6 +19,7 @@ function onStart()
 end
 
 function onPathAction()
+	team.setMountForTrainingMap()
 	while not isTeamSortedByLevelAscending() and getOption(4) do
 		return sortTeamByLevelAscending()
 	end
