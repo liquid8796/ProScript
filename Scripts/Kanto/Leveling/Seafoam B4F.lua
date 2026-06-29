@@ -25,18 +25,40 @@ rectangles = {
 
 selectedRectangle = 0
 
-local mountConfiguredForSeafoam = false
+local seafoamConfiguredGroundMountName = nil
 local seafoamGroundMountMode = nil
 
 function clearConfiguredSeafoamGroundMount(logMessage)
 	if seafoamGroundMountMode ~= "disabled" then
 		setMount("")
 		seafoamGroundMountMode = "disabled"
-		mountConfiguredForSeafoam = false
+		seafoamConfiguredGroundMountName = nil
 		if logMessage ~= nil and logMessage ~= "" then
 			log(logMessage)
 		end
 	end
+end
+
+function configureSeafoamGroundMountForTravel()
+	local mapName = getMapName()
+	for key, mount in ipairs(mounts) do
+		if hasItem(mount) then
+			if seafoamGroundMountMode ~= "enabled" or seafoamConfiguredGroundMountName ~= mount then
+				setMount(mount)
+				seafoamGroundMountMode = "enabled"
+				seafoamConfiguredGroundMountName = mount
+				log("Ground mount configured for travel map "..mapName..": "..mount)
+			end
+			return false
+		end
+	end
+
+	if seafoamGroundMountMode ~= "unavailable" then
+		seafoamGroundMountMode = "unavailable"
+		seafoamConfiguredGroundMountName = nil
+		log("No ground mount item found for travel map "..mapName..".")
+	end
+	return false
 end
 
 function onStart()
@@ -55,12 +77,11 @@ end
 
 function setMountForSeafoamTrainingMap()
 	if getMapName() == "Seafoam B4F" then
-		clearConfiguredSeafoamGroundMount("Ground mount disabled on training map Seafoam B4F.")
+		clearConfiguredSeafoamGroundMount("Ground mount disabled on training/encounter map Seafoam B4F.")
 		return disMountGroundIfNeeded()
 	end
 
-	clearConfiguredSeafoamGroundMount(nil)
-	return disMountGroundIfNeeded()
+	return configureSeafoamGroundMountForTravel()
 end
 
 function onPathAction()

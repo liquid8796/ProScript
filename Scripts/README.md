@@ -19,9 +19,9 @@ local team = require "../../Libs/teamlib"
 
 ## Kanto mount behavior
 
-Kanto training scripts no longer configure automatic ground mounts while walking through city/Pokecenter/transit maps or while training on encounter maps. Shared Kanto scripts call `team.setMountForTrainingMap()` from `onPathAction()`, and the helper now clears the configured ground mount on training maps such as Route 2, Viridian Forest, Rock Tunnel, Seafoam, and Victory Road so the bot does not enter grass/cave training while mounted.
+Kanto training scripts configure automatic ground mounts only on non-training travel maps, such as cities, Pokecenters, and transit maps. On Kanto training/encounter maps such as Route 2, Viridian Forest, Rock Tunnel, Seafoam, and Victory Road, the helper clears the configured ground mount and calls `disMount()` when the player is already mounted so the bot does not enter grass/cave training while mounted.
 
-`team.setMountForTrainingMap()` returns `true` only when it actually sends `disMount()` and the current tick should wait. Clearing mount configuration with `setMount("")` is not considered a Lua movement/action, so the script continues to execute its normal path logic in the same tick.
+`team.setMountForTrainingMap()` returns `true` only when it actually sends `disMount()` and the current tick should wait. Configuring travel mounts with `setMount(mount)` and clearing mount configuration with `setMount("")` are not considered Lua movement/actions, so the script continues to execute its normal path logic in the same tick.
 
 
 ## MoonSharp require path note

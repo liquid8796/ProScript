@@ -40,18 +40,43 @@ local kantoTrainingMaps = {
 	["Viridian Forest"] = true,
 }
 
-local mountedTrainingMapName = nil
+local configuredGroundMountName = nil
 local groundMountMode = nil
 
 local function clearConfiguredGroundMount(logMessage)
 	if groundMountMode ~= "disabled" then
 		setMount("")
 		groundMountMode = "disabled"
-		mountedTrainingMapName = nil
+		configuredGroundMountName = nil
 		if logMessage ~= nil and logMessage ~= "" then
 			log(logMessage)
 		end
 	end
+end
+
+local function configureGroundMountForTravel(mapName)
+	if not isMount then
+		return false
+	end
+
+	for key, mount in ipairs(mountList) do
+		if hasItem(mount) then
+			if groundMountMode ~= "enabled" or configuredGroundMountName ~= mount then
+				setMount(mount)
+				groundMountMode = "enabled"
+				configuredGroundMountName = mount
+				log("Ground mount configured for travel map "..mapName..": "..mount)
+			end
+			return false
+		end
+	end
+
+	if groundMountMode ~= "unavailable" then
+		groundMountMode = "unavailable"
+		configuredGroundMountName = nil
+		log("No ground mount item found for travel map "..mapName..".")
+	end
+	return false
 end
 
 function team.onStart(maxLv)
@@ -88,12 +113,11 @@ function team.setMountForTrainingMap(trainingMaps)
 	local maps = trainingMaps or kantoTrainingMaps
 
 	if maps[mapName] == true then
-		clearConfiguredGroundMount("Ground mount disabled on training map "..mapName..".")
+		clearConfiguredGroundMount("Ground mount disabled on training/encounter map "..mapName..".")
 		return team.disMountGroundIfNeeded()
 	end
 
-	clearConfiguredGroundMount(nil)
-	return team.disMountGroundIfNeeded()
+	return configureGroundMountForTravel(mapName)
 end
 
 function team.onBattleFighting()
