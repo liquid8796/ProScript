@@ -5,7 +5,7 @@ description = [[This script will train the first pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Pewter City and Route 2.]]
 
-local team = require "Scripts/Libs/teamlib"
+local team = require "../../Libs/teamlib"
 local maxLv = 18
 
 function onStart()

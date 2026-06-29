@@ -5,7 +5,7 @@ description = [[This script will track the desire pokémon of your team.
 It will also try to capture shinies by throwing pokéballs.
 Start anywhere in Viridian Forest.]]
 
-local team = require "Scripts/Libs/teamlib"
+local team = require "../../Libs/teamlib"
 local maxLv = 10
 
 function onStart()

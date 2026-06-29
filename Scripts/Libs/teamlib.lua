@@ -1,6 +1,6 @@
-local listPokemon = require "Scripts/Libs/listPokemon"
-local ev = require "Scripts/Libs/listEVs"
-local mountList = require "Scripts/Libs/mountList"
+local listPokemon = require "../../Libs/listPokemon"
+local ev = require "../../Libs/listEVs"
+local mountList = require "../../Libs/mountList"
 local timeLeft = 0
 local listPokemonSavePath = "Scripts/Libs/listPokemon.lua"
 local huntCatchHpThreshold = 70
