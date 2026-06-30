@@ -43,6 +43,10 @@ local kantoTrainingMaps = {
 local configuredGroundMountName = nil
 local groundMountMode = nil
 
+local function isUseMountForTrainEnabled()
+	return getOption ~= nil and getOption(6) == true
+end
+
 local function clearConfiguredGroundMount(logMessage)
 	if groundMountMode ~= "disabled" then
 		setMount("")
@@ -54,29 +58,37 @@ local function clearConfiguredGroundMount(logMessage)
 	end
 end
 
-local function configureGroundMountForTravel(mapName)
+local function configureGroundMountForMap(mapName, mapKind)
 	if not isMount then
 		return false
 	end
 
 	for key, mount in ipairs(mountList) do
 		if hasItem(mount) then
-			if groundMountMode ~= "enabled" or configuredGroundMountName ~= mount then
+			if groundMountMode ~= mapKind or configuredGroundMountName ~= mount then
 				setMount(mount)
-				groundMountMode = "enabled"
+				groundMountMode = mapKind
 				configuredGroundMountName = mount
-				log("Ground mount configured for travel map "..mapName..": "..mount)
+				log("Ground mount configured for "..mapKind.." map "..mapName..": "..mount)
 			end
 			return false
 		end
 	end
 
-	if groundMountMode ~= "unavailable" then
-		groundMountMode = "unavailable"
+	if groundMountMode ~= "unavailable-"..mapKind then
+		groundMountMode = "unavailable-"..mapKind
 		configuredGroundMountName = nil
-		log("No ground mount item found for travel map "..mapName..".")
+		log("No ground mount item found for "..mapKind.." map "..mapName..".")
 	end
 	return false
+end
+
+local function configureGroundMountForTravel(mapName)
+	return configureGroundMountForMap(mapName, "travel")
+end
+
+local function configureGroundMountForTraining(mapName)
+	return configureGroundMountForMap(mapName, "training/encounter")
 end
 
 function team.onStart(maxLv)
@@ -87,6 +99,7 @@ function team.onStart(maxLv)
 	setOption(4, true)
 	setOptionName(5, "Team combat")
 	setOption(5, true)
+	setOptionName(6, "Use mount for train")
 	--closeAllChannel()
 	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
@@ -113,7 +126,11 @@ function team.setMountForTrainingMap(trainingMaps)
 	local maps = trainingMaps or kantoTrainingMaps
 
 	if maps[mapName] == true then
-		clearConfiguredGroundMount("Ground mount disabled on training/encounter map "..mapName..".")
+		if isUseMountForTrainEnabled() then
+			return configureGroundMountForTraining(mapName)
+		end
+
+		clearConfiguredGroundMount("Ground mount disabled on training/encounter map "..mapName..". Enable option 6 `Use mount for train` to keep using a ground mount here.")
 		return team.disMountGroundIfNeeded()
 	end
 

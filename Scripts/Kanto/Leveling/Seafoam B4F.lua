@@ -28,6 +28,10 @@ selectedRectangle = 0
 local seafoamConfiguredGroundMountName = nil
 local seafoamGroundMountMode = nil
 
+function isUseMountForTrainEnabled()
+	return getOption ~= nil and getOption(1) == true
+end
+
 function clearConfiguredSeafoamGroundMount(logMessage)
 	if seafoamGroundMountMode ~= "disabled" then
 		setMount("")
@@ -39,29 +43,38 @@ function clearConfiguredSeafoamGroundMount(logMessage)
 	end
 end
 
-function configureSeafoamGroundMountForTravel()
+function configureSeafoamGroundMountForMap(mapKind)
 	local mapName = getMapName()
 	for key, mount in ipairs(mounts) do
 		if hasItem(mount) then
-			if seafoamGroundMountMode ~= "enabled" or seafoamConfiguredGroundMountName ~= mount then
+			if seafoamGroundMountMode ~= mapKind or seafoamConfiguredGroundMountName ~= mount then
 				setMount(mount)
-				seafoamGroundMountMode = "enabled"
+				seafoamGroundMountMode = mapKind
 				seafoamConfiguredGroundMountName = mount
-				log("Ground mount configured for travel map "..mapName..": "..mount)
+				log("Ground mount configured for "..mapKind.." map "..mapName..": "..mount)
 			end
 			return false
 		end
 	end
 
-	if seafoamGroundMountMode ~= "unavailable" then
-		seafoamGroundMountMode = "unavailable"
+	if seafoamGroundMountMode ~= "unavailable-"..mapKind then
+		seafoamGroundMountMode = "unavailable-"..mapKind
 		seafoamConfiguredGroundMountName = nil
-		log("No ground mount item found for travel map "..mapName..".")
+		log("No ground mount item found for "..mapKind.." map "..mapName..".")
 	end
 	return false
 end
 
+function configureSeafoamGroundMountForTravel()
+	return configureSeafoamGroundMountForMap("travel")
+end
+
+function configureSeafoamGroundMountForTraining()
+	return configureSeafoamGroundMountForMap("training/encounter")
+end
+
 function onStart()
+	setOptionName(1, "Use mount for train")
 	selectRandomRectangle()
 end
 
@@ -77,7 +90,11 @@ end
 
 function setMountForSeafoamTrainingMap()
 	if getMapName() == "Seafoam B4F" then
-		clearConfiguredSeafoamGroundMount("Ground mount disabled on training/encounter map Seafoam B4F.")
+		if isUseMountForTrainEnabled() then
+			return configureSeafoamGroundMountForTraining()
+		end
+
+		clearConfiguredSeafoamGroundMount("Ground mount disabled on training/encounter map Seafoam B4F. Enable option 1 `Use mount for train` to keep using a ground mount here.")
 		return disMountGroundIfNeeded()
 	end
 
