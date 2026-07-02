@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Pewter City and Route 2.]]
 
 local team = require "../../Libs/teamlib"
-local maxLv = 18
+local maxLv = 30
 
 function onStart()
 	return team.onStart(maxLv)
@@ -25,6 +25,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
+
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
@@ -55,9 +56,9 @@ function onBattleAction()
 	return team.onBattleFighting()
 end
 
-function onStop()
-	return team.onStop()
-end
+-- function onStop()
+-- 	return team.onStop()
+-- end
 
 function onBattleMessage(message)
 	return team.onBattleMessage(message)
