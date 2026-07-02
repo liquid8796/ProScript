@@ -5,6 +5,10 @@ local timeLeft = 0
 local listPokemonSavePath = "Scripts/Libs/listPokemon.lua"
 local huntCatchHpThreshold = 70
 local huntWeakenMaxLevelGap = 4
+local huntWeakenMaxAttempts = 3
+local weakenTargetKey = nil
+local weakenLastHealthPercent = nil
+local weakenAttemptCount = 0
 
 team = {}
 local ran = 1
@@ -137,6 +141,36 @@ function team.setMountForTrainingMap(trainingMaps)
 	return configureGroundMountForTravel(mapName)
 end
 
+local function resetWeakenTracking()
+	weakenTargetKey = nil
+	weakenLastHealthPercent = nil
+	weakenAttemptCount = 0
+end
+
+local function shouldStopWeakening(opponentName, opponentLevel, healthPercent)
+	local targetKey = tostring(opponentName or "")..":"..tostring(opponentLevel or "")
+	local hpBucket = nil
+	if healthPercent ~= nil then
+		hpBucket = math.floor(tonumber(healthPercent) or healthPercent)
+	end
+
+	if weakenTargetKey ~= targetKey then
+		weakenTargetKey = targetKey
+		weakenLastHealthPercent = hpBucket
+		weakenAttemptCount = 0
+	end
+
+	if hpBucket ~= nil and weakenLastHealthPercent ~= nil and hpBucket < weakenLastHealthPercent then
+		weakenLastHealthPercent = hpBucket
+		weakenAttemptCount = 0
+	else
+		weakenLastHealthPercent = hpBucket
+		weakenAttemptCount = weakenAttemptCount + 1
+	end
+
+	return weakenAttemptCount > huntWeakenMaxAttempts
+end
+
 function team.onBattleFighting()
 	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
 		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm	
@@ -172,7 +206,7 @@ function team.onBattleFighting()
 				return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
 			end
 		end
-		team.doHunting(huntCondition)
+		return team.doHunting(huntCondition)
 	else
 		--relog(1,"Restart for healing!")
 		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
@@ -236,8 +270,9 @@ function team.findSafeWeakenPokemon(opponentLevel)
 end
 
 function team.throwCatchBall(opponentName)
-	if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokéball") then
-		return log("Try to catch "..opponentName)
+	if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokéball") or useItem("Pokeball") then
+		log("Try to catch "..opponentName)
+		return true
 	end
 
 	log("No usable Pokeball found for hunted Pokemon "..opponentName..".")
@@ -252,16 +287,28 @@ function team.doOnlySearchHunting()
 	local healthPercent = team.getOpponentHealthPercentSafe()
 
 	if not team.shouldWeakenBeforeCatch() then
+		resetWeakenTracking()
 		return team.throwCatchBall(opponentName)
 	end
 
 	if team.isPokemonLevelSafeToWeaken(activePokemonId, opponentLevel) then
+		if shouldStopWeakening(opponentName, opponentLevel, healthPercent) then
+			log("Weakening "..opponentName.." did not lower HP after "..huntWeakenMaxAttempts.." attempts. Throwing ball to avoid battle stuck.")
+			return team.throwCatchBall(opponentName)
+		end
+
 		if healthPercent ~= nil then
 			log("Weakening "..opponentName.." before catch (HP "..math.floor(healthPercent).."%, active Lv "..activePokemonLevel..", opponent Lv "..opponentLevel..").")
 		else
 			log("Weakening "..opponentName.." before catch (active Lv "..activePokemonLevel..", opponent Lv "..opponentLevel..").")
 		end
-		return attack() or useAnyMove()
+
+		if attack() or useAnyMove() then
+			return true
+		end
+
+		log("No weakening move could be used against "..opponentName..". Throwing ball to avoid battle stuck.")
+		return team.throwCatchBall(opponentName)
 	end
 
 	local safePokemonId, safePokemonLevel = team.findSafeWeakenPokemon(opponentLevel)
@@ -270,14 +317,15 @@ function team.doOnlySearchHunting()
 		return sendPokemon(safePokemonId)
 	end
 
+	resetWeakenTracking()
 	log("No usable team Pokemon has level greater than "..opponentName.." by 1-"..huntWeakenMaxLevelGap.." levels. Throwing ball immediately.")
 	return team.throwCatchBall(opponentName)
 end
 
 function team.doHunting(hunt_condition)
 	if hunt_condition then		
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			return
+		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokéball") or useItem("Pokeball") then
+			return true
 		else
 			return attack() or sendUsablePokemon() or sendAnyPokemon() or run() 
 		end
@@ -431,7 +479,11 @@ function team.onBattleMessage(message)
 	if stringContains(message, "You can not switch this Pokemon") then
 		isCanSwitch = false
 	end
+	if stringContains(message, "fainted") or stringContains(message, "ran away") or stringContains(message, "You have fled") then
+		resetWeakenTracking()
+	end
 	if stringContains(message, "caught") and not isOpponentShiny() then
+		resetWeakenTracking()
 		local pokemonName = getOpponentName()
 		listPokemon[pokemonName] = (listPokemon[pokemonName] or 0) + 1
 		log(getItemQuantity("Pokeball").." pokeballs left")
