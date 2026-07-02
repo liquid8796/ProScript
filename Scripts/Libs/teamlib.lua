@@ -6,6 +6,10 @@ local listPokemonSavePath = "Scripts/Libs/listPokemon.lua"
 local huntCatchHpThreshold = 70
 local huntWeakenMaxLevelGap = 4
 local huntWeakenMaxAttempts = 3
+local autoBuyPokeballMoneyThreshold = 30000
+local autoBuyPokeballTargetCount = 150
+local autoBuyPokeballPrice = 200
+local autoBuyPokeballLastLogKey = nil
 local weakenTargetKey = nil
 local weakenLastHealthPercent = nil
 local weakenAttemptCount = 0
@@ -43,6 +47,187 @@ local kantoTrainingMaps = {
 	["Victory Road Kanto 3F"] = true,
 	["Viridian Forest"] = true,
 }
+
+local kantoPokemartMaps = {
+	["Viridian Pokemart"] = true,
+	["Pewter Pokemart"] = true,
+	["Cerulean Pokemart"] = true,
+	["Vermilion Pokemart"] = true,
+	["Lavender Pokemart"] = true,
+	["Fuchsia Pokemart"] = true,
+	["Cinnabar Pokemart"] = true,
+	["Celadon Mart 2"] = true,
+}
+
+local kantoPokemartExitRoutes = {
+	["Viridian Pokemart"] = { x = 4, y = 11, target = "Viridian City" },
+	["Lavender Pokemart"] = { x = 4, y = 11, target = "Lavender Town" },
+	["Cinnabar Pokemart"] = { x = 4, y = 11, target = "Cinnabar Island" },
+	["Celadon Mart 2"] = { x = 1, y = 4, target = "Celadon Mart 1" },
+	["Celadon Mart 1"] = { x = 8, y = 15, target = "Celadon City" },
+}
+
+local kantoAutoBuyPokeballRoutes = {
+	["Player Bedroom Pallet"] = { x = 12, y = 4, target = "Player House Pallet" },
+	["Player House Pallet"] = { x = 4, y = 10, target = "Pallet Town" },
+	["Pallet Town"] = { x = 14, y = 0, target = "Route 1" },
+	["Route 1"] = { x = 13, y = 4, target = "Viridian City" },
+	["Route 1 Stop House"] = { x = 3, y = 2, target = "Viridian City" },
+	["Viridian City"] = { x = 54, y = 34, target = "Viridian Pokemart" },
+	["Pokecenter Viridian"] = { x = 9, y = 22, target = "Viridian City" },
+	["Route 22"] = { x = 60, y = 11, target = "Viridian City" },
+	["Route 2 Stop2"] = { x = 4, y = 2, target = "Route 2" },
+	["Viridian Forest"] = { x = 12, y = 15, target = "Route 2 Stop2" },
+	["Pewter City"] = { x = 37, y = 26, target = "Pewter Pokemart" },
+	["Pokecenter Pewter"] = { x = 9, y = 22, target = "Pewter City" },
+	["Route 3"] = { x = 0, y = 21, target = "Pewter City" },
+	["Pokecenter Route 3"] = { x = 9, y = 22, target = "Route 3" },
+	["Mt. Moon 1F"] = { x = 38, y = 63, target = "Route 3" },
+	["Cerulean City"] = { x = 24, y = 40, target = "Cerulean Pokemart" },
+	["Pokecenter Cerulean"] = { x = 9, y = 22, target = "Cerulean City" },
+	["Route 4"] = { x = 96, y = 22, target = "Cerulean City" },
+	["Route 5"] = { x = 28, y = 0, target = "Cerulean City" },
+	["Route 24"] = { x = 14, y = 31, target = "Cerulean City" },
+	["Route 25"] = { x = 15, y = 30, target = "Route 24" },
+	["Vermilion City"] = { x = 47, y = 37, target = "Vermilion Pokemart" },
+	["Pokecenter Vermilion"] = { x = 9, y = 22, target = "Vermilion City" },
+	["Route 6"] = { x = 23, y = 61, target = "Vermilion City" },
+	["Route 11"] = { x = 0, y = 14, target = "Vermilion City" },
+	["Vermilion City Graveyard"] = { x = 60, y = 33, target = "Route 6" },
+	["Lavender Town"] = { x = 3, y = 5, target = "Lavender Pokemart" },
+	["Pokecenter Lavender"] = { x = 9, y = 22, target = "Lavender Town" },
+	["Route 8"] = { map = "Lavender Town", target = "Lavender Town" },
+	["Celadon City"] = { x = 24, y = 20, target = "Celadon Mart 1" },
+	["Pokecenter Celadon"] = { map = "Celadon City", target = "Celadon City" },
+	["Route 7"] = { map = "Celadon City", target = "Celadon City" },
+	["Celadon Mart 1"] = { x = 1, y = 4, target = "Celadon Mart 2" },
+	["Fuchsia City"] = { x = 15, y = 18, target = "Fuchsia Pokemart" },
+	["Pokecenter Fuchsia"] = { x = 9, y = 22, target = "Fuchsia City" },
+	["Route 18"] = { x = 50, y = 17, target = "Fuchsia City" },
+	["Cinnabar Island"] = { x = 25, y = 24, target = "Cinnabar Pokemart" },
+	["Pokecenter Cinnabar"] = { map = "Cinnabar Island", target = "Cinnabar Island" },
+	["Route 20"] = { map = "Cinnabar Island", target = "Cinnabar Island" },
+	["Route 21"] = { map = "Cinnabar Island", target = "Cinnabar Island" },
+	["Cinnabar mansion 1"] = { map = "Cinnabar Island", target = "Cinnabar Island" },
+}
+
+local function isAutoBuyPokeballEnabled()
+	return getOption ~= nil and getOption(7) == true
+end
+
+local function getPokeballCount()
+	local count = 0
+	if getItemQuantity ~= nil then
+		count = tonumber(getItemQuantity("Pokeball")) or 0
+		local accentCount = tonumber(getItemQuantity("Pokéball")) or 0
+		if accentCount > count then
+			count = accentCount
+		end
+	end
+	return count
+end
+
+local function logAutoBuyPokeball(messageKey, message)
+	if autoBuyPokeballLastLogKey ~= messageKey then
+		autoBuyPokeballLastLogKey = messageKey
+		log(message)
+	end
+end
+
+local function clearAutoBuyPokeballLogState()
+	autoBuyPokeballLastLogKey = nil
+end
+
+local function getRoute2AutoBuyRoute()
+	if getPlayerY ~= nil then
+		local y = tonumber(getPlayerY())
+		if y ~= nil and y < 65 then
+			return { x = 25, y = 0, target = "Pewter City" }
+		end
+	end
+	return { x = 9, y = 130, target = "Viridian City" }
+end
+
+local function handleAutoBuyPokeballInMart(mapName, pokeballCount)
+	if not isShopOpen() then
+		logAutoBuyPokeball("open-shop-"..mapName, "Auto buy pokeball: opening shop in "..mapName..".")
+		if mapName == "Celadon Mart 2" then
+			return talkToNpcOnCell(4, 8)
+		end
+		return talkToNpcOnCell(3, 5)
+	end
+
+	if hasShopItem("Pokeball") then
+		local buyAmount = autoBuyPokeballTargetCount - pokeballCount
+		local maxBuyable = math.floor(getMoney() / autoBuyPokeballPrice)
+		buyAmount = math.min(buyAmount, maxBuyable)
+		if buyAmount > 0 then
+			logAutoBuyPokeball("buy-"..mapName.."-"..buyAmount, "Auto buy pokeball: buying "..buyAmount.." Pokeball(s) in "..mapName..".")
+			return buyItem("Pokeball", buyAmount)
+		end
+	end
+
+	logAutoBuyPokeball("shop-no-pokeball-"..mapName, "Auto buy pokeball: Pokeball is not available in "..mapName..".")
+	return false
+end
+
+local function leaveKantoPokemartIfNeeded(mapName, reason)
+	local route = kantoPokemartExitRoutes[mapName]
+	if route == nil and kantoPokemartMaps[mapName] == true then
+		route = { x = 6, y = 12, target = "outside" }
+	end
+	if route == nil then
+		return false
+	end
+
+	logAutoBuyPokeball("leave-"..mapName.."-"..tostring(reason), "Auto buy pokeball: leaving "..mapName.." after "..tostring(reason)..".")
+	return moveToCell(route.x, route.y)
+end
+
+function team.autoBuyPokeballIfNeeded()
+	if not isAutoBuyPokeballEnabled() then
+		clearAutoBuyPokeballLogState()
+		return false
+	end
+
+	local mapName = getMapName()
+	local pokeballCount = getPokeballCount()
+	if pokeballCount > 0 then
+		if leaveKantoPokemartIfNeeded(mapName, "buying or already having Pokeball") then
+			return true
+		end
+		clearAutoBuyPokeballLogState()
+		return false
+	end
+
+	if getMoney() < autoBuyPokeballMoneyThreshold then
+		if leaveKantoPokemartIfNeeded(mapName, "insufficient money") then
+			return true
+		end
+		logAutoBuyPokeball("not-enough-money", "Auto buy pokeball skipped: inventory has 0 Pokeball but money is below $"..autoBuyPokeballMoneyThreshold..".")
+		return false
+	end
+
+	if kantoPokemartMaps[mapName] == true then
+		return handleAutoBuyPokeballInMart(mapName, pokeballCount)
+	end
+
+	local route = kantoAutoBuyPokeballRoutes[mapName]
+	if mapName == "Route 2" then
+		route = getRoute2AutoBuyRoute()
+	end
+
+	if route ~= nil then
+		logAutoBuyPokeball("route-"..mapName.."-"..tostring(route.target), "Auto buy pokeball: inventory has 0 Pokeball and money >= $"..autoBuyPokeballMoneyThreshold..". Going to "..tostring(route.target)..".")
+		if route.map ~= nil and moveToMap ~= nil then
+			return moveToMap(route.map)
+		end
+		return moveToCell(route.x, route.y)
+	end
+
+	logAutoBuyPokeball("unsupported-"..mapName, "Auto buy pokeball: no Kanto Pokemart route configured from "..mapName..".")
+	return false
+end
 
 local configuredGroundMountName = nil
 local groundMountMode = nil
@@ -104,6 +289,7 @@ function team.onStart(maxLv)
 	setOptionName(5, "Team combat")
 	setOption(5, true)
 	setOptionName(6, "Use mount for train")
+	setOptionName(7, "Auto buy pokeball")
 	--closeAllChannel()
 	log("Training pokemon until reach level "..maxLv)
 	--for longer botting runs
@@ -128,6 +314,10 @@ end
 function team.setMountForTrainingMap(trainingMaps)
 	local mapName = getMapName()
 	local maps = trainingMaps or kantoTrainingMaps
+
+	if team.autoBuyPokeballIfNeeded() then
+		return true
+	end
 
 	if maps[mapName] == true then
 		if isUseMountForTrainEnabled() then
@@ -190,7 +380,7 @@ function team.onBattleFighting()
 		if getOption(3) and huntCondition then
 			return team.doOnlySearchHunting()
 		elseif getOption(3) and not huntCondition then
-			return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
+			return team.defeatOnlySearchNonTarget()
 		end
 		if opponentLevel >= myPokemonLvl and getOption(5) and not huntCondition then
 			local requestedId, requestedLevel = team.getMaxLevelUsablePokemon()
@@ -277,6 +467,13 @@ function team.throwCatchBall(opponentName)
 
 	log("No usable Pokeball found for hunted Pokemon "..opponentName..".")
 	return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
+end
+
+
+function team.defeatOnlySearchNonTarget()
+	local opponentName = getOpponentName()
+	log("Only search: defeating non-target "..tostring(opponentName).." instead of running away.")
+	return attack() or useAnyMove() or sendUsablePokemon() or sendAnyPokemon()
 end
 
 function team.doOnlySearchHunting()
