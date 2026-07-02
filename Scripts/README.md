@@ -39,4 +39,4 @@ Inside `teamlib.lua`, the related shared data files are required with the same `
 ## Kanto wild Pokémon target list
 
 - `Scripts/Libs/listPokemon.lua` includes Route 3 wild Pokémon from the PRO Wiki Route 3 page: land encounters, headbuttable-tree encounters, and diggable-patch encounters. Existing capture counters are preserved when adding new species.
-
+- `Scripts/Libs/listPokemon.lua` includes Viridian Forest wild Pokémon from the PRO Wiki Viridian Forest page: land encounters and headbuttable-tree encounters. Existing capture counters are preserved when adding new species.
