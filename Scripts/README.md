@@ -36,3 +36,7 @@ local team = require "../../Libs/teamlib"
 ```
 
 Inside `teamlib.lua`, the related shared data files are required with the same `../../Libs/...` path so Kanto Capture, EV Training, and Leveling scripts can load them consistently.
+## Kanto wild Pokémon target list
+
+- `Scripts/Libs/listPokemon.lua` includes Route 3 wild Pokémon from the PRO Wiki Route 3 page: land encounters, headbuttable-tree encounters, and diggable-patch encounters. Existing capture counters are preserved when adding new species.
+
