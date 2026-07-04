@@ -58,3 +58,7 @@ Rules:
 
 When option 3 `Only search` is enabled, Kanto teamlib now only throws balls for Pokémon that match the hunt list or shiny condition. Wild Pokémon that do not match the target condition are defeated with `attack()` / `useAnyMove()` instead of using `run()`. This keeps battles deterministic and avoids the old behavior where non-target encounters were immediately escaped.
 
+
+## Kanto Mt. Moon target list update
+
+`Scripts/Libs/listPokemon.lua` now includes Mt. Moon wild Pokémon from the PRO Wiki `Mt. Moon` page, covering 1F, B1F, and B2F Land encounters plus Diggable Patches. Existing target counters are preserved; newly added species default to `0`.
