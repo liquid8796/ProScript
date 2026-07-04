@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere between Route 3 and the entrance of the Mt. Moon.]]
 
 local team = require "../../Libs/teamlib"
-local maxLv = 30
+local maxLv = 99
 
 function onStart()
 	return team.onStart(maxLv)
@@ -55,9 +55,9 @@ function onBattleAction()
 	return team.onBattleFighting()
 end
 
-function onStop()
-	return team.onStop()
-end
+-- function onStop()
+-- 	return team.onStop()
+-- end
 
 function onBattleMessage(message)
 	return team.onBattleMessage(message)
