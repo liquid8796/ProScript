@@ -10,11 +10,11 @@ local listPokemon =
 ['Caterpie']=2,
 ['Chingling']=0,
 ['Clefable']=0,
-['Clefairy']=0,
+['Clefairy']=2,
 ['Cleffa']=0,
 ['Ekans']=0,
 ['Elgyem']=0,
-['Geodude']=0,
+['Geodude']=2,
 ['Graveler']=0,
 ['Heracross']=0,
 ['Honedge']=0,
@@ -44,6 +44,6 @@ local listPokemon =
 ['Venonat']=0,
 ['Weedle']=2,
 ['Yanma']=0,
-['Zubat']=0,
+['Zubat']=2,
 }
 return listPokemon
