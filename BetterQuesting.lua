@@ -18,11 +18,10 @@ local ran = 1
 local isNeedMount = true
 
 function onStart()
-	setOptionName(1, "Relog on stop")
-	setOptionName(2, "Pokemart")
-	setOptionName(3, "Catch mode")
-	setOptionName(4, "Evolve")
-	setOptionName(5, "Check Best Pkm")
+	setOptionName(1, "Pokemart")
+	setOptionName(2, "Catch mode")
+	setOptionName(3, "Evolve")
+	setOptionName(4, "Check Best Pkm")
 	-- closeAllChannel()
 	if isNeedMount then
 		for key, mount in ipairs(mountList) do
@@ -59,11 +58,6 @@ end
 function onResume()
 end
 
-function onStop()
-	if getOption(1) then
-		return relog(60, "Relogging.")
-	end
-end
 
 function onPathAction()
 	if getMapName() == "Prof. Antibans Classroom" then

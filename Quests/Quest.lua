@@ -342,7 +342,7 @@ end
 
 function Quest:needPokemart()
 	-- TODO: ItemManager
-	if getOption(2) and getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
+	if getOption(1) and getItemQuantity("Pokeball") < 150 and getMoney() >= 200 then
 		return true
 	end
 	return false
@@ -394,7 +394,7 @@ function Quest:evolvePokemon()
 	
 	--local lowestLvl = team.getLowestLvl()
 	--if lowestLvl >= 90 then enableAutoEvolve() end
-	if not getOption(4) then
+	if not getOption(3) then
 		return
 	end
 	
@@ -708,7 +708,7 @@ end
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if getOption(3) and isWildBattle() 													--if it's a wild battle:
+	if getOption(2) and isWildBattle() 													--if it's a wild battle:
 		and (isOpponentShiny() 											--catch special pkm
 			or isEventPkm
 			or ((isAlreadyCaught() == false and self:isPokemonBlacklisted(getOpponentName()) == false and getOpponentLevel() >= 5))
