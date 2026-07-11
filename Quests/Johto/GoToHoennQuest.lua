@@ -88,10 +88,10 @@ function GoToHoennQuest:IndigoPlateau()
 		sys.debug("quest", "Team too weak, training until Level " .. self.level .. ".")
 		return moveToCell(21, 31)
 	elseif self:hasLevel80Rattata() then
-		if isNpcOnCell(21, 10) then
+		if isNpcOnCell(21, 7) then
 			pushDialogAnswer(game.hasPokemonWithName("Rattata"))
 			sys.debug("quest", "Going to fight Youngster Joey with our Level 80 Rattata.")
-			return talkToNpcOnCell(21, 10)
+			return talkToNpcOnCell(21, 7)
 		else
 			sys.debug("quest", "Going to Hoenn!")
 			return talkToNpcOnCell(21, 7)

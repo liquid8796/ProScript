@@ -139,9 +139,9 @@ function PokeFluteQuest:PokemonTower6F()
 		sys.debug("quest", "Going back to Lavender Town.")
 		return moveToCell(17,13)
 	else
-		if isNpcOnCell(9,19) then
+		if isNpcOnCell(13,11) then
 			sys.debug("quest", "Going to fight the ghost.")
-			return talkToNpcOnCell(9,19)
+			return talkToNpcOnCell(13,11)
 		else
 			sys.debug("quest", "Going to top floor to talk to Fuji.")
 			return moveToCell(8,19)

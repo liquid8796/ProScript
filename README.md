@@ -18,3 +18,7 @@ In PROCatchem, open **Script**, choose **Load Script**, then select `BetterQuest
 - Removed the `Relog on stop` option and its `onStop()` relog behavior.
 - Renumbered the remaining BetterQuesting options from 1 through 4.
 - Updated all BetterQuesting quest references to the new option indices.
+
+- Audited `talkToNpcOnCell(...)` coordinates against the supplied `maps.zip` using PROCatchem's map parser.
+- Corrected confirmed NPC/object positions on `Viridian Maze`, `Bills House`, `Pokemon Tower 6F`, and `Indigo Plateau`.
+- Kept coordinates unchanged where the corresponding map file was not present in `maps.zip`; those maps are listed in the separately generated audit report.

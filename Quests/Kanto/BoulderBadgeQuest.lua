@@ -71,9 +71,9 @@ function BoulderBadgeQuest:ViridianForest()
 end
 
 function BoulderBadgeQuest:ViridianMaze()
-	if isNpcOnCell(186, 52) then
+	if isNpcOnCell(23, 47) then
 		sys.debug("quest", "Going to get secret Pokemon.")
-		return talkToNpcOnCell(186, 52)
+		return talkToNpcOnCell(23, 47)
 	else
 		sys.debug("quest", "Going to Pewter City.")
 		self.checkedViridianMazePokeball = true

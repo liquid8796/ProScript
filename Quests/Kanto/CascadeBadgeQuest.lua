@@ -178,9 +178,9 @@ function CascadeBadgeQuest:BillsHouse() -- get ticket
 		return moveToCell(10, 13)
 	else
 		if dialogs.bookPillowDone.state then
-			return talkToNpcOnCell(11, 3)
+			return talkToNpcOnCell(13, 11)
 		else
-			return talkToNpcOnCell(18, 2)
+			return talkToNpcOnCell(17, 8)
 		end
 	end
 end
