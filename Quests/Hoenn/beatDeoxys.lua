@@ -248,8 +248,8 @@ end
 
 function beatDeoxys:SkyPillarEntranceCave1F()
 	if self:needPokecenter() then 
-		sys.debug("quest", "Going to heal Pokemon.")
-		return talkToNpcOnCell(7, 17)
+		sys.debug("quest", "Going to activate the healing TileScript.")
+		return moveToCell(7, 17)
 	else
 		sys.debug("quest", "Going to fight Deoxys.")
 		return moveToCell(17,6)
@@ -426,7 +426,9 @@ function beatDeoxys:SootopolisCityGymB1F()
 	elseif game.inRectangle(13, 21, 22, 28) then
 		return moveToCell(13, 21)
 	elseif game.inRectangle(10, 5, 16, 14) then
-		return talkToNpcOnCell(13, 6)
+		-- No NPC exists at (13, 6) in the current B1F map.
+		-- Return through the upper link so the script can reach Wallace on 1F.
+		return moveToCell(13, 21)
 	end
 end
 

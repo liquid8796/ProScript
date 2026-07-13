@@ -372,13 +372,9 @@ function ToMossdeepCity:MossdeepGym() -- double check
 
 	-- top left
 	elseif game.inRectangle(0, 0, 20, 16) then
-		if not dialogs.liza.state then
-			sys.debug("quest", "Going to fight Liza.")
-			return talkToNpcOnCell(18, 6)
-		else
-			sys.debug("quest", "Going to fight Tate.")
-			return moveToCell(7, 3)
-		end
+		-- The current map places both leaders in the top-right room.
+		sys.debug("quest", "Going to reach Liza and Tate.")
+		return moveToCell(7, 3)
 
 	-- middle left
 	elseif game.inRectangle(1, 27, 17, 37) then
@@ -392,7 +388,10 @@ function ToMossdeepCity:MossdeepGym() -- double check
 
 	-- top right
 	elseif game.inRectangle(47, 6, 56, 12) then
-		if not dialogs.tate.state then
+		if not dialogs.liza.state and isNpcOnCell(51, 8) then
+			sys.debug("quest", "Going to fight Liza.")
+			return talkToNpcOnCell(51, 8)
+		elseif not dialogs.tate.state and isNpcOnCell(52, 8) then
 			sys.debug("quest", "Going to fight Tate.")
 			return talkToNpcOnCell(52, 8)
 		end

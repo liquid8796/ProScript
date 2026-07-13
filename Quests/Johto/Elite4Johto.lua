@@ -269,7 +269,7 @@ function Elite4Johto:VictoryRoadKanto3F()
 end
 
 function Elite4Johto:IndigoPlateau()
-	if not isNpcOnCell(21, 10) then -- level 80 rattata quest done
+	if not isNpcOnCell(21, 7) then -- Hoenn Traveler spawn in the current Indigo Plateau map
 		dialogs.leagueDefeated.state = true
 	elseif isNpcOnCell(10,13) then
 		sys.debug("quest", "Going to talk to NPC in front of Johto E4.")

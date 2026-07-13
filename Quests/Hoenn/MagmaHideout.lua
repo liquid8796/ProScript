@@ -144,11 +144,8 @@ end
 
 function MagmaHideOut:MagmaHideout4F() -- groudon: 19, 29
 	if isNpcOnCell(16, 31) then
-		sys.debug("quest", "Going to talk to NPC.")
+		sys.debug("quest", "Going to talk to Magma Admin Tabitha.")
 		return talkToNpcOnCell(16, 31)
-	if isNpcOnCell(15, 31) then
-		sys.debug("quest", "Going to talk to NPC.")
-		return talkToNpcOnCell(15, 31)
 	end
 end
 

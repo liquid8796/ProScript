@@ -355,7 +355,9 @@ function RocketCeladonQuest:RocketHideoutB2F()
 	elseif dialogs.releaseEeveeDone.state or (self.b3f_ReceptorDone and self.b4f_ReceptorDone) then
 		return moveToCell(31, 4) -- Rocket Hideout B1F
 	else
-		return talkToNpcOnCell(2, 3)
+		-- Defensive fallback: current map data has no interactable NPC at (2, 3).
+		-- Return to the B3F link instead of calling talkToNpcOnCell on an empty cell.
+		return moveToCell(23, 4)
 	end
 end
 
