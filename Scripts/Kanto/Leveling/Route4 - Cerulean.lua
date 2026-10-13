@@ -16,12 +16,15 @@ function onPathAction()
 	if team.setMountForTrainingMap() then
 		return
 	end
-	while not isTeamSortedByLevelAscending() do
+	while not isTeamSortedByLevelAscending() and getOption(4) do
 		return sortTeamByLevelAscending()
 	end
 	if team.isTrainingOver(maxLv) and not team.isSearching() then
 		return fatal("Complete training! Stop the bot.")
 	end
+	if team.useLeftovers() then
+		return
+    end
 	if getUsablePokemonCount() > 1 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
@@ -56,14 +59,6 @@ function onBattleAction()
 	return team.onBattleFighting()
 end
 
-function onStop()
-	if getOption(1) then
-		return relog(2,"Restart bot after 2s")
-	else
-		return
-	end
-end
-
 function onBattleMessage(message)
 	return team.onBattleMessage(message)
 end
@@ -72,3 +67,6 @@ function onDialogMessage(message)
 	return team.onAntibanDialogMessage(message)
 end
 
+function onSystemMessage(message)
+	return team.onSystemMessage(message)
+end
