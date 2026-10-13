@@ -39,3 +39,6 @@ luac.out
 *.x86_64
 *.hex
 
+# Build artifacts for the MoonSharp-backed regression runner
+Tests/MoonSharpRegression/bin/
+Tests/MoonSharpRegression/obj/
