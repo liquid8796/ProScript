@@ -9,6 +9,29 @@ local blacklist = require "blacklist"
 
 local Quest = {}
 
+-- A non-repeatable optional NPC is tried once per visit to this map.
+-- This is NOT a time-based cooldown; quest NPCs and Pokestops are unaffected.
+local discoverableVisitMap = nil
+local discoverableAttempts = {}
+local function tryDiscoverableTalk(kind, entry)
+    local mapName = getMapName()
+    if discoverableVisitMap ~= mapName then
+        discoverableVisitMap = mapName
+        discoverableAttempts = {}
+    end
+    local id = entry.id
+    local key = kind .. ':' .. (id and ('npc:' .. tostring(id))
+        or ('cell:' .. tostring(entry.x) .. ':' .. tostring(entry.y)))
+    if discoverableAttempts[key] or not isNpcOnCell(entry.x, entry.y) then
+        return false
+    end
+    if talkToNpcOnCell(entry.x, entry.y) then
+        discoverableAttempts[key] = true
+        return true
+    end
+    return false
+end
+
 -- Runtime-only Pokestop state. This is intentionally a cooldown, not a permanent blacklist.
 -- Some Pokestops stay visible after returning a passive NPC dialog such as a badge requirement,
 -- so checkDiscoverables() would otherwise call talkToNpcOnCell() forever on the same map cell.
@@ -457,11 +480,9 @@ end
 function Quest:checkDiscoverables()
 	if hasItem("Shovel") or (game.hasPokemonWithMove("Dig") and getPokemonHappiness(team.getFirstPkmWithMove("Dig")) >= 150) then
 		for i,v in ipairs(getActiveDigSpots()) do
-			if isNpcOnCell(v.x, v.y) then
-				if talkToNpcOnCell(v.x, v.y) then
+			if tryDiscoverableTalk("dig", v) then
 					sys.debug("Dig Spot Finder", "Going to DigSpot " .. i .. ": x(" .. v.x .. "), " .. "y(" .. v.y .. ")")
 					return true 
-				end
 			end
 		end
 	end
@@ -477,11 +498,9 @@ function Quest:checkDiscoverables()
 	if hasItem("Battering Ram") or (game.hasPokemonWithMove("Headbutt") and getPokemonHappiness(team.getFirstPkmWithMove("Headbutt")) >= 150) then
 		for i,v in ipairs(getActiveHeadbuttTrees()) do
 			if not sys.tableHasValue(blacklistHeadbuttMaps, getMapName()) then
-				if isNpcOnCell(v.x, v.y) then
-					if talkToNpcOnCell(v.x, v.y) then
+				if tryDiscoverableTalk("headbutt", v) then
 						sys.debug("Headbutt Tree Finder", "Going to Headbutt Tree: x(" .. v.x .. "), " .. "y(" .. v.y .. ")")
 						return true 
-					end
 				end
 			end
 		end
@@ -495,11 +514,9 @@ function Quest:checkDiscoverables()
 
 	for i,v in ipairs(getActiveBerryTrees()) do
 		if not sys.tableHasValue(blacklistBerryTreeMaps, getMapName()) then
-			if isNpcOnCell(v.x, v.y) then
-				if talkToNpcOnCell(v.x, v.y) then
+			if tryDiscoverableTalk("berry", v) then
 					sys.debug("Berry Finder", "Going to Berry Tree: x(" .. v.x .. "), " .. "y(" .. v.y .. ")")
 					return true
-				end
 			end
 		end
 	end
@@ -528,11 +545,9 @@ function Quest:checkDiscoverables()
 
 	for i,v in ipairs(getDiscoverableItems()) do
 		if not sys.tableHasValue(blackListMapsForItems, getMapName()) then
-			if isNpcOnCell(v.x, v.y) then
-				if talkToNpcOnCell(v.x, v.y) then
+			if tryDiscoverableTalk("item", v) then
 					sys.debug("Item Finder", "Going to Item: x(" .. v.x .. "), " .. "y(" .. v.y .. ")")
 					return true
-				end
 			end
 		end
 	end
@@ -570,11 +585,9 @@ function Quest:checkDiscoverables()
 
 	for i, discoverablePokemon in ipairs(getDiscoverableAbandonedPokemon()) do
 		if not sys.tableHasValue(abandonedPokemonMapBlacklist, getMapName()) then
-			if isNpcOnCell(discoverablePokemon.x, discoverablePokemon.y) then
-				if talkToNpcOnCell(discoverablePokemon.x, discoverablePokemon.y) then
+			if tryDiscoverableTalk("abandoned", discoverablePokemon) then
 					sys.debug("Abandoned Pokemon Finder", "Going to Abandoned Pokemon: x(" .. discoverablePokemon.x .. "), " .. "y(" .. discoverablePokemon.y .. ")")
 					return true
-				end
 			end
 		end
 	end
