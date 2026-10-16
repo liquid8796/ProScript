@@ -27,7 +27,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	if getUsablePokemonCount() > 1 
+	if getUsablePokemonCount() > 2
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then

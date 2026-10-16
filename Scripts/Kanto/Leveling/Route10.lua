@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere on Route 10.]]
 
 local team = require "../../Libs/teamlib"
-local maxLv = 100
+local maxLv = 99
 
 function onStart()
 	return team.onStart(maxLv)
@@ -25,7 +25,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	if getUsablePokemonCount() > 1 
+	if getUsablePokemonCount() > 2
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
@@ -49,10 +49,6 @@ end
 
 function onBattleAction()
 	return team.onBattleFighting()
-end
-
-function onStop()
-	return team.onStop()
 end
 
 function onBattleMessage(message)
