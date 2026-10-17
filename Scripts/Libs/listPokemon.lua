@@ -1,6 +1,6 @@
 local listPokemon = 
 {
-['Venomoth']=2,
+['Rhyhorn']=0,
 ['Aron']=0,
 ['Baltoy']=0,
 ['Cherubi']=0,
@@ -23,7 +23,7 @@ local listPokemon =
 ['Larvitar']=0,
 ['Elekid']=0,
 ['Electabuzz']=0,
-['Machoke']=0,
+['Machoke']=2,
 ['Noctowl']=2,
 ['Pineco']=0,
 ['Onix']=0,
