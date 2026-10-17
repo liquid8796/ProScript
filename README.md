@@ -13,6 +13,25 @@ In PROCatchem, open **Script**, choose **Load Script**, then select `BetterQuest
 3. **Evolve** — enables the quest evolution logic, including supported Moon Stone evolutions.
 4. **Check Best Pkm** — enables selected quest checkpoints to inspect PC storage and replace team members with species having a higher configured `TotalStats` value. It compares species base-stat totals only; it does not evaluate IVs, EVs, Nature, level, moves, or Ability.
 
+
+## Kanto Route 10 / Rock Tunnel leveling (script v1.0.373)
+
+The leveling script at Scripts/Kanto/Leveling/Route10 - RockTunnel.lua now
+uses the confirmed Rock Tunnel 1/2 warp endpoints in the 2026-10-17
+LinkGraph v2 upload. It walks a complete north-to-south and south-to-north
+route and always heads back toward the northern Pokecenter when healing.
+
+**Important:** Rock Tunnel 1 and Rock Tunnel 2 contain multiple disconnected
+sectors despite sharing map names. The script classifies its sector using
+the confirmed arrival coordinates at each map change, remembers that sector
+while staying on the same map, and falls back to coarse geometric partitions
+only if started mid-cave without an observed arrival. The link graph alone
+does not contain full walkable/collision geometry for arbitrary start cells.
+
+To check the route and the existing BetterQuesting NPC regressions:
+
+    dotnet run --project Tests/MoonSharpRegression
+
 ## Changes
 
 - Removed the `Relog on stop` option and its `onStop()` relog behavior.
