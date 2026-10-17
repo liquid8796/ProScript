@@ -7,6 +7,7 @@ Start anywhere on Route 10.]]
 
 local team = require "../../Libs/teamlib"
 local maxLv = 99
+local maxUsablePokemon = 1
 
 function onStart()
 	return team.onStart(maxLv)
@@ -25,7 +26,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	if getUsablePokemonCount() > 2
+	if getUsablePokemonCount() > maxUsablePokemon
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
