@@ -7,6 +7,7 @@ Start anywhere between Vermilion City and Route 6.]]
 
 local team = require "../../Libs/teamlib"
 local maxLv = 100
+local maxUsablePokemon = 2
 local listVermilion_1 = "36-22,36-19,38-19,38-11,43-11,43-0"
 local listVermilion_2 = "43-11,38-11,38-22,27-21"
 local list_1_1 = "27-53,27-45,36-45,36-31,13-30,13-23,26-23,26-21,34-21,34-25,34-45,23-45,23-50,19-50,19-52,0-52"
@@ -30,7 +31,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	if getUsablePokemonCount() > 1 
+	if getUsablePokemonCount() > maxUsablePokemon
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
@@ -68,10 +69,6 @@ end
 
 function onBattleAction()
 	return team.onBattleFighting()
-end
-
-function onStop()
-	return team.onStop()
 end
 
 function onBattleMessage(message)
