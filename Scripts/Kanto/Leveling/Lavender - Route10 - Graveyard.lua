@@ -6,7 +6,7 @@ It will also try to capture shinies by throwing pokéballs.
 Start anywhere in Lavender Town / Route 10 / Graveyard.]]
 
 local team = require "../../Libs/teamlib"
-local maxLv = 30
+local maxLv = 99
 
 function onStart()
 	return team.onStart(maxLv)
@@ -25,7 +25,7 @@ function onPathAction()
 	if team.useLeftovers() then
 		return
     end
-	if getUsablePokemonCount() > 1 
+	if getUsablePokemonCount() > 2 
 		and (getPokemonLevel(team.getLowestIndexOfUsablePokemon()) < maxLv
 		or team.isSearching())
 	then
@@ -47,6 +47,8 @@ function onPathAction()
 			moveToCell(15,71)
 		elseif getMapName() == "Lavender Town" then
 			moveToCell(9,5)
+		elseif getMapName() == "Pokecenter Lavender" then
+			usePokecenter()
 		elseif getMapName() == "Prof. Antibans Classroom" then
 			return team.antibanclassroom()
 		end
